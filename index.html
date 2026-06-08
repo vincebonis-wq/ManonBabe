@@ -573,6 +573,7 @@
         <div id="selfie-controls">
           <button class="selfie-btn" id="selfie-cam-btn"  onclick="startCamera()">Activer la caméra 📷</button>
           <button class="selfie-btn" id="selfie-snap-btn" onclick="snapPhoto()" style="display:none">Prendre la photo 📸</button>
+          <button class="selfie-btn" id="selfie-save-btn" onclick="savePhoto()" style="display:none">Sauvegarder la photo 📥</button>
           <button class="selfie-btn" id="selfie-ok-btn"   onclick="selfieOk()"  style="display:none">C'est parfait ! 💛</button>
         </div>
       </div>
@@ -1047,6 +1048,7 @@ function buildSelfie(q) {
   document.getElementById('selfie-photo').style.display = 'none';
   document.getElementById('selfie-cam-btn').style.display = 'block';
   document.getElementById('selfie-snap-btn').style.display = 'none';
+  document.getElementById('selfie-save-btn').style.display = 'none';
   document.getElementById('selfie-ok-btn').style.display = 'none';
 }
 
@@ -1078,7 +1080,24 @@ function snapPhoto() {
   v.srcObject.getTracks().forEach(t => t.stop());
   v.srcObject = null; v.style.display = 'none';
   document.getElementById('selfie-snap-btn').style.display = 'none';
+  document.getElementById('selfie-save-btn').style.display = 'block';
   document.getElementById('selfie-ok-btn').style.display = 'block';
+}
+
+function savePhoto() {
+  const c = document.getElementById('selfie-canvas');
+  c.toBlob(blob => {
+    const file = new File([blob], 'selfie-safari.jpg', { type: 'image/jpeg' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: 'Notre selfie safari 💛' }).catch(() => {});
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'selfie-safari.jpg';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+  }, 'image/jpeg', 0.85);
 }
 
 function selfieOk() {
