@@ -6,682 +6,842 @@
   <title>Joyeux Anniversaire Manon 🎉</title>
   <style>
     :root {
-      --dark:   #0D0500;
-      --brown:  #5D4037;
-      --sand:   #F5E6C8;
-      --tan:    #DFC882;
       --accent: #FF8F00;
       --deep:   #E65100;
+      --dark:   #0D0400;
+      --sand:   #F5E6C8;
       --green:  #2E7D32;
       --red:    #C62828;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Georgia', serif; background: var(--dark); height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
 
-    body {
-      font-family: 'Georgia', serif;
-      background: var(--dark);
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
+    /* ══════════════════════════════════
+       SCREENS
+    ══════════════════════════════════ */
     .screen {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity .7s ease, transform .7s ease;
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity .6s ease, transform .6s ease;
     }
     .screen.hidden { opacity: 0; pointer-events: none; transform: scale(.97); }
 
-    /* ═══════════ INTRO ═══════════ */
+    /* ══════════════════════════════════
+       INTRO
+    ══════════════════════════════════ */
     #intro {
-      flex-direction: column;
-      text-align: center;
-      padding: 40px 20px;
+      flex-direction: column; text-align: center; padding: 40px 20px;
       color: var(--sand);
-      background: radial-gradient(ellipse at 50% 40%, #6B2B10 0%, #0D0500 70%);
+      background: radial-gradient(ellipse at 50% 40%, #6B2B10 0%, #0D0400 70%);
       overflow: hidden;
     }
-
-    /* Firefly particles */
-    .ff {
-      position: absolute;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: ffFloat linear infinite;
-      pointer-events: none;
-    }
-    @keyframes ffFloat {
+    .ff { position: absolute; border-radius: 50%; background: var(--accent); animation: ffUp linear infinite; pointer-events: none; }
+    @keyframes ffUp {
       0%   { transform: translateY(100vh) scale(0); opacity: 0; }
       5%   { opacity: 1; }
-      90%  { opacity: .6; }
-      100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
+      90%  { opacity: .5; }
+      100% { transform: translateY(-100px) scale(1.3); opacity: 0; }
     }
-
     .intro-wrap { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
-
-    .rhino-box {
-      font-size: 100px;
-      display: inline-block;
-      animation: rhinoFloat 3.5s ease-in-out infinite;
-      position: relative;
-      margin-bottom: 8px;
-    }
-    .rhino-shadow {
-      width: 55px; height: 14px;
-      background: rgba(0,0,0,.35);
-      border-radius: 50%;
-      margin: 0 auto 22px;
-      animation: shadowPop 3.5s ease-in-out infinite;
-    }
-    @keyframes rhinoFloat {
-      0%,100% { transform: translateY(0) rotate(-3deg); }
-      50%     { transform: translateY(-18px) rotate(3deg); }
-    }
-    @keyframes shadowPop {
-      0%,100% { transform: scaleX(1); opacity: .35; }
-      50%     { transform: scaleX(.55); opacity: .12; }
-    }
-
-    #intro h1 {
-      font-size: clamp(2em, 6vw, 3.5em);
-      text-shadow: 0 2px 30px rgba(255,143,0,.8);
-      margin-bottom: 12px;
-      animation: fadeUp .8s ease .2s both;
-    }
-    #intro p {
-      font-size: 1.12em; opacity: .85; margin-bottom: 42px; line-height: 1.6;
-      animation: fadeUp .8s ease .4s both;
-    }
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(20px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
+    .rh { font-size: 96px; display: inline-block; animation: rFloat 3.5s ease-in-out infinite; margin-bottom: 6px; }
+    .rh-shadow { width: 52px; height: 12px; background: rgba(0,0,0,.3); border-radius: 50%; margin: 0 auto 24px; animation: rShadow 3.5s ease-in-out infinite; }
+    @keyframes rFloat  { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-18px) rotate(3deg); } }
+    @keyframes rShadow { 0%,100% { transform: scaleX(1); opacity: .3; }      50% { transform: scaleX(.5); opacity: .1; } }
+    #intro h1 { font-size: clamp(2em, 6vw, 3.5em); text-shadow: 0 2px 30px rgba(255,143,0,.8); margin-bottom: 12px; animation: fadeUp .8s ease .2s both; }
+    #intro p  { font-size: 1.1em; opacity: .85; margin-bottom: 40px; line-height: 1.6; animation: fadeUp .8s ease .4s both; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
 
     .btn {
       background: linear-gradient(135deg, var(--accent), var(--deep));
-      color: #fff; border: none;
-      padding: 15px 52px; font-size: 1.2em;
-      border-radius: 50px; cursor: pointer;
-      font-family: 'Georgia', serif; letter-spacing: .5px;
+      color: #fff; border: none; padding: 15px 52px; font-size: 1.2em;
+      border-radius: 50px; cursor: pointer; font-family: 'Georgia', serif;
       box-shadow: 0 6px 30px rgba(255,143,0,.5);
-      animation: fadeUp .8s ease .6s both, btnGlow 2.5s ease 1.6s infinite;
-      position: relative; overflow: hidden;
-      transition: transform .2s;
+      animation: fadeUp .8s ease .6s both, glow 2.5s ease 1.8s infinite;
+      position: relative; overflow: hidden; transition: transform .2s;
     }
+    .btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.18) 0%, transparent 60%); }
     .btn:hover { transform: translateY(-3px) scale(1.03); }
     .btn:active { transform: scale(.97); }
-    .btn::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,.18) 0%, transparent 60%);
-    }
-    @keyframes btnGlow {
-      0%,100% { box-shadow: 0 6px 30px rgba(255,143,0,.5); }
-      50%     { box-shadow: 0 6px 55px rgba(255,143,0,.95), 0 0 0 10px rgba(255,143,0,.08); }
-    }
+    @keyframes glow { 0%,100% { box-shadow: 0 6px 30px rgba(255,143,0,.5); } 50% { box-shadow: 0 6px 60px rgba(255,143,0,1), 0 0 0 10px rgba(255,143,0,.08); } }
 
-    /* ═══════════ GAME ═══════════ */
+    /* ══════════════════════════════════
+       GAME LAYOUT
+    ══════════════════════════════════ */
     #game {
-      background: var(--sand);
-      flex-direction: row;
+      flex-direction: column;
       align-items: stretch;
+      background: #1a0d00;
+      padding: 0;
     }
 
-    /* Map panel */
-    #map-panel {
-      width: 210px; flex-shrink: 0;
-      background: var(--tan);
-      border-right: 3px solid #C4A265;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 20px 10px;
-      position: relative; overflow: hidden;
+    /* ─── SAFARI SCENE ─── */
+    #scene-wrap {
+      flex-shrink: 0;
+      height: 38vh; min-height: 160px; max-height: 300px;
+      overflow: hidden; position: relative;
+      background: linear-gradient(to bottom,
+        #3A7FBF 0%, #6AAED4 30%, #E8A84C 58%, #C8832A 68%, #7A5018 75%, #3E2A0A 100%);
     }
-    #map-panel::before {
-      content: '';
+
+    /* Mountains (fixed, behind scene) */
+    #mountains {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      overflow: visible;
+    }
+
+    /* The wide scrolling layer */
+    #scene-inner {
       position: absolute; inset: 0;
-      background: repeating-linear-gradient(
-        45deg, rgba(180,130,50,.04) 0px, rgba(180,130,50,.04) 1px,
-        transparent 1px, transparent 14px
-      );
-    }
-    #map-title {
-      font-size: .7em; color: #5C3A10;
-      letter-spacing: 2px; text-transform: uppercase;
-      margin-bottom: 14px; z-index: 1; font-weight: bold;
-    }
-    #route-svg { width: 100%; max-width: 172px; z-index: 1; }
-
-    /* Dashed route animation (marching ants) */
-    .r-line {
-      stroke: #C4A265; stroke-width: 2.5;
-      stroke-dasharray: 6,5; fill: none;
-      animation: marchAnts 1.2s linear infinite;
-    }
-    .r-line.lit { stroke: var(--accent); stroke-dasharray: none; animation: none; }
-    @keyframes marchAnts {
-      from { stroke-dashoffset: 0; }
-      to   { stroke-dashoffset: -11; }
+      width: 3800px; height: 100%;
+      transition: transform 1.8s cubic-bezier(.25,.46,.45,.94);
     }
 
-    .r-dot { transition: fill .4s; }
-    .r-dot.visited { fill: var(--accent); }
-    .r-dot.current {
-      fill: var(--deep);
-      filter: drop-shadow(0 0 6px rgba(255,143,0,.9));
-      animation: stopGlow 1.4s ease-in-out infinite;
-    }
-    @keyframes stopGlow {
-      0%,100% { filter: drop-shadow(0 0 4px rgba(255,143,0,.7)); }
-      50%     { filter: drop-shadow(0 0 14px rgba(255,200,0,1)); }
+    /* Sun */
+    .sun {
+      position: absolute; top: 8%; right: 220px;
+      width: 60px; height: 60px;
+      background: radial-gradient(circle, #FFF9C4 30%, #FFCC02 60%, transparent 100%);
+      border-radius: 50%; box-shadow: 0 0 40px #FFCC02;
     }
 
-    .r-label { font-size: 9px; fill: #5C3A10; font-family: Georgia, serif; }
+    /* Birds (V shapes) */
+    .bird { position: absolute; font-size: 12px; color: rgba(255,255,255,.5); }
 
-    #cruiser { font-size: 20px; transition: all 1.1s cubic-bezier(.34,1.3,.64,1); }
+    /* Acacia tree */
+    .tree {
+      position: absolute;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .tree-top {
+      background: #2D5A1B;
+      border-radius: 45% 45% 30% 30%;
+    }
+    .tree-trunk {
+      background: #6B3A10;
+      border-radius: 1px;
+    }
 
-    /* Question panel */
+    /* Ground & road */
+    .ground-strip {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to bottom, #5C3A10 0%, #3A2208 100%);
+    }
+    .road {
+      position: absolute;
+      background: linear-gradient(to bottom, #9A7030 0%, #7A5018 100%);
+    }
+
+    /* Grass tufts */
+    .tuft { position: absolute; bottom: 0; }
+    .tuft span { display: inline-block; width: 3px; background: #4A6820; border-radius: 2px 2px 0 0; margin: 0 1px; transform-origin: bottom; }
+
+    /* Rhino silhouette in distance */
+    .rhino-dist { position: absolute; font-size: 28px; opacity: .35; filter: grayscale(1); }
+
+    /* Checkpoint flags */
+    .flag {
+      position: absolute;
+      display: flex; flex-direction: column; align-items: center;
+      z-index: 5;
+    }
+    .flag-banner {
+      background: var(--accent); color: #fff;
+      font-size: 10px; font-weight: bold; letter-spacing: 1px;
+      padding: 3px 6px; border-radius: 3px 3px 0 0;
+      white-space: nowrap;
+    }
+    .flag-pole {
+      width: 2px; background: #8B6010;
+    }
+    .flag.reached .flag-banner { background: var(--green); }
+
+    /* Dust particles */
+    .dust {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(200,160,80,.5);
+      pointer-events: none;
+      animation: dustFly .6s ease-out forwards;
+    }
+    @keyframes dustFly {
+      0%   { transform: translate(0,0) scale(1); opacity: .6; }
+      100% { transform: translate(-40px, -15px) scale(2.5); opacity: 0; }
+    }
+
+    /* Land Cruiser wrapper */
+    #car-wrap {
+      position: absolute;
+      z-index: 10;
+      transition: left 1.8s cubic-bezier(.25,.46,.45,.94);
+    }
+    #car-wrap.driving { animation: carBounce .22s ease-in-out infinite; }
+    #car-wrap.stopped { animation: none; }
+    @keyframes carBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+    /* Wheel spin */
+    .whl { transform-box: fill-box; transform-origin: center; }
+    .whl.spinning { animation: wSpin .35s linear infinite; }
+    @keyframes wSpin { to { transform: rotate(360deg); } }
+
+    /* ─── QUESTION PANEL ─── */
     #q-panel {
-      flex: 1;
-      display: flex; flex-direction: column;
-      padding: 30px 36px;
-      color: #3E2723;
-      justify-content: center;
-      max-width: 570px; overflow: hidden;
+      flex: 1; display: flex; flex-direction: column;
+      background: #120800;
+      border-top: 2px solid #3A2000;
+      overflow-y: auto;
     }
 
-    #prog-bar {
-      height: 7px; background: #D7CCC8;
-      border-radius: 4px; margin-bottom: 28px; overflow: hidden;
-    }
-    #prog-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--deep));
-      border-radius: 4px;
-      transition: width .9s cubic-bezier(.34,1.5,.64,1);
+    #q-inner {
+      flex: 1; display: flex; flex-direction: column; justify-content: center;
+      padding: 18px 28px; gap: 14px;
+      max-width: 680px; margin: 0 auto; width: 100%;
     }
 
-    #stop-label {
-      font-size: .78em; color: #8B5E3C;
-      letter-spacing: 1.5px; text-transform: uppercase;
-      margin-bottom: 10px;
+    /* Progress dots */
+    #prog-dots { display: flex; gap: 8px; align-items: center; }
+    .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #3A2000; border: 2px solid #6A4000;
+      transition: background .4s, border-color .4s, transform .3s;
+    }
+    .dot.done  { background: var(--accent); border-color: var(--accent); }
+    .dot.active { background: var(--deep); border-color: var(--accent); transform: scale(1.3);
+      box-shadow: 0 0 8px rgba(255,143,0,.8); }
+    #prog-line { flex: 1; height: 2px; background: #3A2000; border-radius: 1px; }
+
+    /* Location badge */
+    #stop-badge {
+      display: inline-block;
+      background: rgba(255,143,0,.15); border: 1px solid rgba(255,143,0,.4);
+      color: var(--accent); font-size: .72em; letter-spacing: 1.5px;
+      text-transform: uppercase; padding: 4px 12px; border-radius: 20px;
+      align-self: flex-start;
     }
 
+    /* Question text */
     #q-text {
-      font-size: clamp(1em, 2.2vw, 1.25em);
-      color: #3E2723; margin-bottom: 22px; line-height: 1.55;
+      color: #F5E6C8; font-size: clamp(.95em, 2.2vw, 1.2em);
+      line-height: 1.6; min-height: 48px;
     }
 
-    .slide-in { animation: slideR .35s ease both; }
-    @keyframes slideR {
-      from { opacity:0; transform:translateX(28px); }
-      to   { opacity:1; transform:translateX(0); }
-    }
-
-    #opts { display: flex; flex-direction: column; gap: 10px; }
+    /* Answer options */
+    #opts { display: flex; flex-direction: column; gap: 8px; }
 
     .opt {
-      text-align: left; background: #fff;
-      color: #3E2723; border: 2px solid #D7CCC8;
-      padding: 13px 18px; border-radius: 12px;
-      cursor: pointer; font-size: .95em;
-      font-family: 'Georgia', serif;
-      transition: border-color .15s, background .15s, transform .15s;
+      display: flex; align-items: center; gap: 12px;
+      background: #1E0E00; color: #D4B87A;
+      border: 2px solid #3A2000; padding: 11px 16px;
+      border-radius: 10px; cursor: pointer;
+      font-size: .95em; font-family: 'Georgia', serif;
+      transition: border-color .15s, background .15s, transform .12s;
       position: relative; overflow: hidden;
     }
-    .opt::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,143,0,.05));
-      opacity: 0; transition: opacity .2s;
+    .opt-key {
+      width: 22px; height: 22px; border-radius: 6px;
+      background: #3A2000; border: 1px solid #6A4000;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75em; font-weight: bold; color: #FF8F00; flex-shrink: 0;
+      font-family: monospace;
     }
-    .opt:hover:not(:disabled) { border-color: var(--accent); transform: translateX(6px); }
-    .opt:hover:not(:disabled)::before { opacity: 1; }
+    .opt:hover:not(:disabled) { border-color: var(--accent); background: #2A1400; transform: translateX(4px); }
+    .opt:hover:not(:disabled) .opt-key { background: var(--accent); color: #fff; border-color: var(--accent); }
     .opt:disabled { cursor: default; }
+    .opt.correct { background: #0A2010; border-color: var(--green); color: #90EE90; animation: cPop .4s ease forwards; }
+    .opt.wrong   { background: #200A0A; border-color: var(--red);   color: #FFB3B3; animation: wShake .4s ease forwards; }
+    .opt.correct .opt-key { background: var(--green); color: #fff; border-color: var(--green); }
+    .opt.wrong .opt-key   { background: var(--red);   color: #fff; border-color: var(--red); }
+    @keyframes cPop   { 0%{transform:translateX(0)} 35%{transform:translateX(6px) scale(1.02)} 100%{transform:translateX(4px)} }
+    @keyframes wShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
 
-    .opt.correct {
-      background: #E8F5E9; border-color: var(--green); color: #1B5E20;
-      animation: correctBounce .45s ease forwards;
-    }
-    .opt.wrong {
-      background: #FFEBEE; border-color: var(--red); color: #B71C1C;
-      animation: wrongShake .4s ease forwards;
-    }
-    @keyframes correctBounce {
-      0%   { transform: scale(1); }
-      35%  { transform: scale(1.04) translateX(5px); }
-      100% { transform: scale(1) translateX(6px); }
-    }
-    @keyframes wrongShake {
-      0%,100% { transform:translateX(0); }
-      20%     { transform:translateX(-9px); }
-      40%     { transform:translateX(9px); }
-      60%     { transform:translateX(-5px); }
-      80%     { transform:translateX(5px); }
-    }
+    /* Feedback */
+    #feedback { font-size: .88em; color: #C8A060; font-style: italic; line-height: 1.5; min-height: 20px; }
 
-    #feedback {
-      margin-top: 16px; font-size: .93em;
-      min-height: 24px; color: #4E342E;
-      font-style: italic; line-height: 1.5;
+    /* Next button area */
+    #next-wrap { display: none; }
+    #next-btn {
+      background: linear-gradient(135deg, var(--accent), var(--deep));
+      color: #fff; border: none; padding: 12px 36px; font-size: 1em;
+      border-radius: 30px; cursor: pointer; font-family: 'Georgia', serif;
+      box-shadow: 0 4px 20px rgba(255,143,0,.4);
+      transition: transform .2s, box-shadow .2s;
+      animation: fadeUp .35s ease;
     }
+    #next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(255,143,0,.7); }
 
-    #next-btn { margin-top: 20px; display: none; animation: fadeUp .35s ease; }
-
-    /* ── Tongue Twister ── */
-    #tt-area { display: none; flex-direction: column; gap: 14px; }
-
-    #tt-instr { font-size: .88em; color: #8B5E3C; font-style: italic; line-height: 1.5; }
-
-    #tt-display {
-      background: rgba(255,255,255,.7); border: 2px solid #D7CCC8;
-      border-radius: 12px; padding: 14px 16px;
-      display: flex; flex-wrap: wrap; gap: 0; line-height: 2;
-      font-size: 1.05em;
-    }
-
-    .tc {
-      display: inline;
-      transition: color .08s, background .08s;
-      border-bottom: 2px solid #CCC;
-      padding: 0 1px;
-    }
-    .tc.ok  { color: var(--green); border-color: var(--green); background: rgba(46,125,50,.08); }
-    .tc.bad { color: var(--red);   border-color: var(--red);   background: rgba(198,40,40,.1); animation: cShake .18s ease; }
-    .tc.sp  { border-bottom: none; }
-    @keyframes cShake {
-      0%,100% { transform:translateX(0); }
-      33%     { transform:translateX(-3px); }
-      66%     { transform:translateX(3px); }
-    }
-
+    /* ─── TONGUE TWISTER ─── */
+    #tt-area { display: none; flex-direction: column; gap: 12px; }
+    #tt-instr { font-size: .83em; color: #A07840; font-style: italic; }
     #tt-timer {
-      font-size: 2.8em; font-weight: bold;
-      color: var(--deep); text-align: center;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 3px;
-      text-shadow: 0 2px 12px rgba(230,81,0,.25);
+      font-size: 3em; font-weight: bold; color: var(--deep);
+      font-family: 'Courier New', monospace; letter-spacing: 3px; text-align: center;
+      text-shadow: 0 2px 16px rgba(230,81,0,.3);
     }
-    #tt-timer.running { animation: timerPulse .8s ease-in-out infinite; }
-    @keyframes timerPulse {
-      0%,100% { transform: scale(1); }
-      50%     { transform: scale(1.04); }
+    #tt-timer.running { animation: tPulse .7s ease-in-out infinite; }
+    @keyframes tPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+    #tt-display {
+      background: #1E0E00; border: 2px solid #3A2000;
+      border-radius: 10px; padding: 12px 14px;
+      display: flex; flex-wrap: wrap; line-height: 2; font-size: 1em; color: #D4B87A;
     }
-
+    .tc { display: inline; border-bottom: 2px solid #4A3000; padding: 0 1px; }
+    .tc.ok  { color: #66BB6A; border-color: #66BB6A; background: rgba(46,125,50,.12); }
+    .tc.bad { color: #EF5350; border-color: #EF5350; background: rgba(198,40,40,.12); animation: cShk .15s ease; }
+    .tc.sp  { border-bottom: none; }
+    @keyframes cShk { 0%,100%{transform:translateX(0)} 33%{transform:translateX(-3px)} 66%{transform:translateX(3px)} }
     #tt-input {
-      width: 100%; padding: 12px 16px;
-      border: 2px solid #D7CCC8; border-radius: 12px;
-      font-size: 1em; font-family: 'Georgia', serif;
-      background: #fff; color: #3E2723;
+      width: 100%; padding: 11px 16px;
+      background: #1E0E00; border: 2px solid #3A2000; border-radius: 10px;
+      font-size: 1em; font-family: 'Georgia', serif; color: #F5E6C8;
       outline: none; transition: border-color .2s;
     }
     #tt-input:focus { border-color: var(--accent); }
+    #tt-result { display: none; flex-direction: column; gap: 6px; text-align: center; }
+    #tt-stars  { font-size: 2.2em; }
+    #tt-score  { font-size: 1.05em; font-weight: bold; color: var(--accent); }
+    #tt-msg    { font-size: .85em; color: #A07840; font-style: italic; }
 
-    #tt-result { display: none; text-align: center; flex-direction: column; gap: 8px; }
-    #tt-stars  { font-size: 2em; }
-    #tt-score-text { font-size: 1.1em; font-weight: bold; color: var(--deep); }
-    #tt-msg    { font-size: .92em; color: #5D4037; font-style: italic; }
-
-    /* ═══════════ FINAL ═══════════ */
-    #final {
-      flex-direction: column;
-      text-align: center;
-      padding: 30px 20px;
+    /* ══════════════════════════════════
+       FINAL MESSAGE screen
+    ══════════════════════════════════ */
+    #final-msg-screen {
+      flex-direction: column; text-align: center; padding: 40px 24px;
       color: var(--sand);
-      background: radial-gradient(ellipse at 50% 65%, #3D1800 0%, #070200 100%);
+      background: radial-gradient(ellipse at 50% 60%, #3D1800 0%, #070100 100%);
       overflow: hidden;
     }
-
-    #final-wrap {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 0; max-width: 450px;
+    #final-msg-screen .content { max-width: 480px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+    #final-msg-screen .trophy { font-size: 72px; animation: trophyBounce 2s ease-in-out infinite; }
+    @keyframes trophyBounce { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-12px) rotate(5deg)} }
+    #final-msg-screen h1 { font-size: clamp(1.8em, 5vw, 2.8em); text-shadow: 0 2px 30px rgba(255,143,0,.9); animation: fadeUp .8s ease both; }
+    .msg-text {
+      font-size: 1.05em; line-height: 1.85; color: #E8C880; opacity: 0;
+      animation: fadeUp .8s ease .5s both;
     }
+    .msg-text em { color: #FFD180; font-style: italic; }
+    .msg-divider { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); animation: fadeUp .8s ease .3s both; }
 
-    #final h1 {
-      font-size: clamp(1.7em, 5vw, 2.8em);
-      text-shadow: 0 2px 30px rgba(255,143,0,.9);
-      margin-bottom: 0;
-      animation: fadeUp .8s ease both;
+    /* ══════════════════════════════════
+       GIFT CARD screen
+    ══════════════════════════════════ */
+    #gift-screen {
+      flex-direction: column; text-align: center; padding: 30px 20px;
+      color: var(--sand);
+      background: radial-gradient(ellipse at 50% 55%, #3D1500 0%, #060100 100%);
+      overflow: hidden;
     }
-
-    #final-msg {
-      font-size: 1em; line-height: 1.8;
-      margin: 22px 0 28px; max-width: 400px;
-      opacity: 0.92;
-      animation: fadeUp .8s ease .4s both;
-    }
-    #final-msg em { color: #FFD180; font-style: italic; }
-
     .gift-card {
       background: linear-gradient(140deg, #FF8F00 0%, #E65100 55%, #BF360C 100%);
       border-radius: 22px; padding: 28px 36px;
       max-width: 390px; width: 100%;
       box-shadow: 0 24px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(255,200,80,.2);
-      animation: cardUp 1s cubic-bezier(.34,1.45,.64,1) .9s both;
+      animation: cardReveal 1s cubic-bezier(.34,1.45,.64,1) .3s both;
     }
-    @keyframes cardUp {
-      from { opacity:0; transform:translateY(70px) scale(.88) rotateX(10deg); }
-      to   { opacity:1; transform:translateY(0) scale(1) rotateX(0); }
-    }
-
+    @keyframes cardReveal { from{opacity:0;transform:translateY(60px) scale(.88)} to{opacity:1;transform:translateY(0) scale(1)} }
     .gc-logo  { font-size: 2.2em; margin-bottom: 4px; }
-    .gc-label { font-size: .72em; letter-spacing: 3px; text-transform: uppercase; opacity: .7; margin-bottom: 4px; }
+    .gc-lbl   { font-size: .72em; letter-spacing: 3px; text-transform: uppercase; opacity: .7; margin-bottom: 4px; }
     .gc-brand { font-size: 1.7em; font-weight: bold; margin-bottom: 4px; }
-    .gc-plan  { font-size: 1em; opacity: .85; font-style: italic; margin-bottom: 18px; }
+    .gc-plan  { font-size: 1em; opacity: .88; font-style: italic; margin-bottom: 18px; }
     .gc-div   { height: 1px; background: rgba(255,255,255,.2); margin-bottom: 18px; }
-    .gc-code-lbl { font-size: .72em; opacity: .65; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
-    .gc-code {
-      font-family: 'Courier New', monospace;
-      font-size: 1.25em; letter-spacing: 4px;
-      background: rgba(0,0,0,.3); padding: 11px 16px;
-      border-radius: 10px; word-break: break-all;
-      cursor: pointer; transition: background .2s;
-      user-select: all;
+    .gc-clbl  { font-size: .72em; opacity: .65; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .gc-code  {
+      font-family: 'Courier New', monospace; font-size: 1.25em; letter-spacing: 4px;
+      background: rgba(0,0,0,.3); padding: 11px 16px; border-radius: 10px;
+      word-break: break-all; cursor: pointer; transition: background .2s; user-select: all;
     }
     .gc-code:hover { background: rgba(0,0,0,.45); }
     .gc-from { margin-top: 16px; font-size: .82em; opacity: .7; font-style: italic; }
 
-    /* mini confetti burst */
-    .spark {
-      position: fixed; width: 9px; height: 9px;
-      border-radius: 2px; pointer-events: none;
-      animation: sparkFly linear forwards;
-    }
-    @keyframes sparkFly {
-      0%   { opacity: 1; }
-      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(720deg) scale(.3); }
-    }
+    /* ══ SHARED FX ══ */
+    .spark { position: fixed; border-radius: 2px; pointer-events: none; animation: sparkFly linear forwards; }
+    @keyframes sparkFly { 0%{opacity:1} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(720deg) scale(.2)} }
+    .confetti { position: fixed; pointer-events: none; animation: cFall linear forwards; }
+    @keyframes cFall { 0%{opacity:1;transform:translateY(-20px) rotate(0)} 100%{opacity:0;transform:translateY(110vh) rotate(900deg)} }
 
-    .confetti {
-      position: fixed; pointer-events: none;
-      animation: cFall linear forwards;
-    }
-    @keyframes cFall {
-      0%   { opacity:1; transform:translateY(-20px) rotate(0deg); }
-      100% { opacity:0; transform:translateY(110vh) rotate(900deg); }
-    }
-
-    /* Responsive */
+    /* ══ RESPONSIVE ══ */
     @media (max-width: 600px) {
-      #game { flex-direction: column; overflow-y: auto; height: 100vh; }
-      #map-panel { width:100%; height:150px; border-right:none; border-bottom:3px solid #C4A265; flex-direction:row; align-items:center; justify-content:center; }
-      #map-title { display:none; }
-      #route-svg { transform: rotate(90deg); max-width:120px; height:120px; }
-      #q-panel { padding:20px 18px; flex:none; }
+      #q-inner { padding: 14px 16px; gap: 10px; }
+      #tt-timer { font-size: 2.2em; }
+      .opt { padding: 9px 12px; font-size: .88em; }
     }
   </style>
 </head>
 <body>
 
-<!-- ═══════ INTRO ═══════ -->
+<!-- ═══ INTRO ═══ -->
 <div class="screen" id="intro">
   <div class="intro-wrap">
-    <div class="rhino-box">🦏</div>
-    <div class="rhino-shadow"></div>
+    <div class="rh">🦏</div>
+    <div class="rh-shadow"></div>
     <h1>Joyeux Anniversaire<br>Manon&nbsp;! 🎂</h1>
-    <p>Un petit road trip en Asie du Sud-Est...<br>Réponds aux questions pour débloquer ta surprise 🎁</p>
+    <p>Un safari pour toi...<br>Réponds aux questions pour débloquer ta surprise 🎁</p>
     <button class="btn" onclick="startGame()">Démarrer l'aventure 🚙</button>
   </div>
 </div>
 
-<!-- ═══════ GAME ═══════ -->
-<div class="screen hidden" id="game">
+<!-- ═══ GAME ═══ -->
+<div class="screen hidden" id="game" style="flex-direction:column;align-items:stretch;">
 
-  <div id="map-panel">
-    <div id="map-title">🗺 Notre route</div>
-    <svg id="route-svg" viewBox="0 0 160 340" xmlns="http://www.w3.org/2000/svg">
-
-      <!-- Route lines -->
-      <line id="l01" class="r-line" x1="80" y1="42"  x2="80" y2="94"/>
-      <line id="l12" class="r-line" x1="80" y1="106" x2="80" y2="159"/>
-      <line id="l23" class="r-line" x1="80" y1="171" x2="80" y2="224"/>
-      <line id="l34" class="r-line" x1="80" y1="236" x2="80" y2="288"/>
-      <line id="l45" class="r-line" x1="80" y1="300" x2="80" y2="328"/>
-
-      <!-- Stop dots -->
-      <circle id="s0" class="r-dot current" cx="80" cy="33"  r="10"/>
-      <text class="r-label" x="95" y="37">🌴 Bangkok</text>
-
-      <circle id="s1" class="r-dot" cx="80" cy="100" r="9" fill="#D7CCC8"/>
-      <text class="r-label" x="95" y="104">🌊 Hanoï</text>
-
-      <circle id="s2" class="r-dot" cx="80" cy="165" r="9" fill="#D7CCC8"/>
-      <text class="r-label" x="95" y="169">🏛 Siem Reap</text>
-
-      <circle id="s3" class="r-dot" cx="80" cy="230" r="9" fill="#D7CCC8"/>
-      <text class="r-label" x="95" y="234">🦁 Kuala Lumpur</text>
-
-      <circle id="s4" class="r-dot" cx="80" cy="295" r="9" fill="#D7CCC8"/>
-      <text class="r-label" x="95" y="299">🦏 Bornéo</text>
-
-      <text id="s-final" x="62" y="342" font-size="20" opacity=".25">🎁</text>
-
-      <!-- Land Cruiser -->
-      <text id="cruiser" x="44" y="39" font-size="20">🚙</text>
+  <!-- SAFARI SCENE -->
+  <div id="scene-wrap">
+    <!-- Fixed background mountains SVG -->
+    <svg id="mountains" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <polygon points="0,100% 8%,52% 16%,68% 24%,38% 34%,60% 42%,30% 52%,55% 62%,25% 72%,48% 82%,18% 92%,42% 100%,28% 100%,100%" fill="#2A5A1A" opacity=".55"/>
+      <polygon points="0,100% 5%,65% 13%,78% 22%,50% 30%,70% 40%,42% 50%,65% 60%,35% 70%,58% 80%,30% 90%,52% 100%,38% 100%,100%" fill="#1E4012" opacity=".45"/>
     </svg>
-  </div>
 
-  <div id="q-panel">
-    <div id="prog-bar"><div id="prog-fill" style="width:0%"></div></div>
-    <div id="stop-label"></div>
-    <div id="q-text"></div>
+    <!-- Sun -->
+    <div class="sun"></div>
 
-    <!-- Normal options -->
-    <div id="opts"></div>
-
-    <!-- Tongue twister zone -->
-    <div id="tt-area">
-      <div id="tt-instr"></div>
-      <div id="tt-timer">00.0</div>
-      <div id="tt-display"></div>
-      <input id="tt-input" type="text" autocomplete="off" autocorrect="off"
-             spellcheck="false" placeholder="Commence à taper ici...">
-      <div id="tt-result">
-        <div id="tt-stars"></div>
-        <div id="tt-score-text"></div>
-        <div id="tt-msg"></div>
-      </div>
+    <!-- Wide scrolling layer -->
+    <div id="scene-inner">
+      <!-- populated by JS -->
     </div>
 
-    <div id="feedback"></div>
-    <button class="btn" id="next-btn" onclick="nextQ()">Continuer →</button>
+    <!-- Land Cruiser (outside scene-inner, on top) -->
+    <div id="car-wrap" style="bottom:22%">
+      <svg id="car-svg" viewBox="0 0 170 90" width="170" height="90" xmlns="http://www.w3.org/2000/svg">
+        <!-- Shadow -->
+        <ellipse cx="96" cy="87" rx="62" ry="5" fill="rgba(0,0,0,0.25)"/>
+        <!-- Body -->
+        <rect x="8" y="36" width="150" height="35" rx="4" fill="#C8A040"/>
+        <!-- Cabin -->
+        <path d="M 24,36 L 24,14 Q 25,10 29,10 L 104,10 Q 118,10 124,20 L 136,36 Z" fill="#B8902C"/>
+        <!-- Hood -->
+        <rect x="134" y="28" width="22" height="16" rx="2" fill="#B8902C"/>
+        <!-- Grill -->
+        <rect x="152" y="30" width="7" height="18" rx="1" fill="#7A5500"/>
+        <line x1="153" y1="34" x2="158" y2="34" stroke="#5A3A00" stroke-width="1.2"/>
+        <line x1="153" y1="38" x2="158" y2="38" stroke="#5A3A00" stroke-width="1.2"/>
+        <line x1="153" y1="42" x2="158" y2="42" stroke="#5A3A00" stroke-width="1.2"/>
+        <!-- Windshield -->
+        <path d="M 120,20 L 133,36 L 112,36 L 112,14 Z" fill="rgba(150,210,240,0.72)" stroke="#8B6010" stroke-width=".8"/>
+        <!-- Windows -->
+        <rect x="26" y="13" width="30" height="19" rx="2" fill="rgba(150,210,240,0.72)" stroke="#8B6010" stroke-width=".8"/>
+        <rect x="60" y="13" width="46" height="19" rx="2" fill="rgba(150,210,240,0.72)" stroke="#8B6010" stroke-width=".8"/>
+        <!-- Body stripe -->
+        <line x1="8" y1="52" x2="158" y2="52" stroke="#A07810" stroke-width="1.5"/>
+        <!-- Door handles -->
+        <rect x="56" y="48" width="10" height="3" rx="1.5" fill="#7A5500"/>
+        <rect x="95" y="48" width="10" height="3" rx="1.5" fill="#7A5500"/>
+        <!-- Roof rack -->
+        <rect x="28" y="7" width="78" height="4" rx="1" fill="#7A5500"/>
+        <line x1="48" y1="7" x2="48" y2="11" stroke="#5A3A00" stroke-width="2"/>
+        <line x1="68" y1="7" x2="68" y2="11" stroke="#5A3A00" stroke-width="2"/>
+        <line x1="88" y1="7" x2="88" y2="11" stroke="#5A3A00" stroke-width="2"/>
+        <!-- Headlight -->
+        <rect x="153" y="30" width="5" height="8" rx="1" fill="#FFF9C4"/>
+        <!-- Spare tire (rear) -->
+        <circle cx="14" cy="51" r="15" fill="#2a2a2a"/>
+        <circle cx="14" cy="51" r="9"  fill="#3d3d3d"/>
+        <circle cx="14" cy="51" r="3.5" fill="#555"/>
+        <!-- Front bumper -->
+        <rect x="143" y="63" width="18" height="5" rx="1" fill="#7A5500"/>
+
+        <!-- Rear wheel -->
+        <g class="whl" id="whl-r">
+          <circle cx="44"  cy="71" r="18" fill="#1a1a1a"/>
+          <circle cx="44"  cy="71" r="11" fill="#333"/>
+          <line x1="44" y1="59" x2="44" y2="83" stroke="#555" stroke-width="2.5"/>
+          <line x1="32" y1="71" x2="56" y2="71" stroke="#555" stroke-width="2.5"/>
+          <line x1="35" y1="63" x2="53" y2="79" stroke="#555" stroke-width="2.5"/>
+          <line x1="53" y1="63" x2="35" y2="79" stroke="#555" stroke-width="2.5"/>
+          <circle cx="44" cy="71" r="4" fill="#555"/>
+        </g>
+        <!-- Front wheel -->
+        <g class="whl" id="whl-f">
+          <circle cx="122" cy="71" r="18" fill="#1a1a1a"/>
+          <circle cx="122" cy="71" r="11" fill="#333"/>
+          <line x1="122" y1="59" x2="122" y2="83" stroke="#555" stroke-width="2.5"/>
+          <line x1="110" y1="71" x2="134" y2="71" stroke="#555" stroke-width="2.5"/>
+          <line x1="113" y1="63" x2="131" y2="79" stroke="#555" stroke-width="2.5"/>
+          <line x1="131" y1="63" x2="113" y2="79" stroke="#555" stroke-width="2.5"/>
+          <circle cx="122" cy="71" r="4" fill="#555"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- QUESTION PANEL -->
+  <div id="q-panel">
+    <div id="q-inner">
+      <!-- Progress -->
+      <div id="prog-dots"></div>
+
+      <!-- Location badge -->
+      <div id="stop-badge">📍 ...</div>
+
+      <!-- Question -->
+      <div id="q-text"></div>
+
+      <!-- Options (quiz) -->
+      <div id="opts"></div>
+
+      <!-- Tongue twister -->
+      <div id="tt-area">
+        <div id="tt-instr"></div>
+        <div id="tt-timer">00.0</div>
+        <div id="tt-display"></div>
+        <input id="tt-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Commence à taper...">
+        <div id="tt-result">
+          <div id="tt-stars"></div>
+          <div id="tt-score"></div>
+          <div id="tt-msg"></div>
+        </div>
+      </div>
+
+      <!-- Feedback -->
+      <div id="feedback"></div>
+
+      <!-- Next -->
+      <div id="next-wrap">
+        <button class="btn" id="next-btn" onclick="nextQ()">Continuer →</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ═══════ FINAL ═══════ -->
-<div class="screen hidden" id="final">
-  <div id="final-wrap">
-    <h1>🎁 Ta surprise</h1>
-    <p id="final-msg">
+<!-- ═══ FINAL: Message ═══ -->
+<div class="screen hidden" id="final-msg-screen">
+  <div class="content">
+    <div class="trophy">🏆</div>
+    <h1>Safari accompli&nbsp;! 🎉</h1>
+    <div class="msg-divider"></div>
+    <p class="msg-text">
       Ce cadeau est pour toi — pour nourrir<br>
       <em>le projet qui te tient tant à cœur.</em><br><br>
       Parce que tes rêves méritent les meilleurs outils,<br>
       et que je crois en toi plus que tout. 💛
     </p>
-    <div class="gift-card">
-      <div class="gc-logo">✦</div>
-      <div class="gc-label">Carte Cadeau</div>
-      <div class="gc-brand">Claude AI</div>
-      <div class="gc-plan">1 mois d'abonnement Pro — offert</div>
-      <div class="gc-div"></div>
-      <div class="gc-code-lbl">Code à utiliser sur claude.ai</div>
-      <!--
-        ╔═══════════════════════════════════════════╗
-        ║  REMPLACE LE CODE CI-DESSOUS PAR LE VRAI  ║
-        ╚═══════════════════════════════════════════╝
-      -->
-      <div class="gc-code" title="Clique pour copier" onclick="copyCode(this)">XXXX-XXXX-XXXX-XXXX</div>
-      <div class="gc-from">Avec tout mon amour 🦏</div>
-    </div>
+    <button class="btn" onclick="showGift()" style="animation:fadeUp .8s ease 1s both">
+      Voir la surprise →
+    </button>
+  </div>
+</div>
+
+<!-- ═══ FINAL: Gift Card ═══ -->
+<div class="screen hidden" id="gift-screen">
+  <div class="gift-card">
+    <div class="gc-logo">✦</div>
+    <div class="gc-lbl">Carte Cadeau</div>
+    <div class="gc-brand">Claude AI</div>
+    <div class="gc-plan">1 mois d'abonnement Pro — offert</div>
+    <div class="gc-div"></div>
+    <div class="gc-clbl">Code à utiliser sur claude.ai</div>
+    <!--
+      ╔═════════════════════════════════════╗
+      ║  REMPLACE PAR LE VRAI CODE CADEAU  ║
+      ╚═════════════════════════════════════╝
+    -->
+    <div class="gc-code" title="Clique pour copier" onclick="copyCode(this)">XXXX-XXXX-XXXX-XXXX</div>
+    <div class="gc-from">Avec tout mon amour 🦏</div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  QUESTIONS  — modifie correct: et options: si besoin
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  QUESTIONS
+// ═══════════════════════════════════════════
 const QUESTIONS = [
   {
-    type: 'quiz',
-    stop: "🌴 Bangkok, Thaïlande",
-    q: "Dans quel pays avons-nous fait notre première plongée ensemble ?",
-    opts: ["🇵🇭 Philippines", "🇹🇭 Thaïlande", "🇲🇾 Malaisie", "🇮🇩 Indonésie"],
-    correct: 0,
-    ok: "Exactement ! Les Philippines — un baptême sous-marin inoubliable 🤿"
+    type:'quiz', stop:"🌴 Bangkok, Thaïlande",
+    q:"Dans quel pays avons-nous fait notre première plongée ensemble ?",
+    opts:["🇵🇭 Philippines","🇹🇭 Thaïlande","🇲🇾 Malaisie","🇮🇩 Indonésie"],
+    correct:0,
+    ok:"Exactement ! Les Philippines — un baptême sous-marin inoubliable 🤿"
   },
   {
-    type: 'quiz',
-    stop: "🌊 Hanoï, Vietnam",
-    q: "Combien de cornes a le rhinocéros de Sumatra ?",
-    opts: ["1 corne", "2 cornes", "3 cornes", "Aucune"],
-    correct: 1,
-    ok: "Bravo ! Le seul rhino d'Asie avec 2 cornes. Rare et magnifique 🦏"
+    type:'quiz', stop:"🌊 Hanoï, Vietnam",
+    q:"Combien de cornes a le rhinocéros de Sumatra ?",
+    opts:["1 corne","2 cornes","3 cornes","Aucune"],
+    correct:1,
+    ok:"Bravo ! Le seul rhino d'Asie avec 2 cornes. Rare et magnifique 🦏"
   },
   {
-    type: 'quiz',
-    stop: "🏛 Siem Reap, Cambodge",
-    q: "Combien reste-t-il environ de rhinocéros de Sumatra à l'état sauvage ?",
-    opts: ["Moins de 80", "Entre 200 et 500", "Environ 1 000", "Plus de 5 000"],
-    correct: 0,
-    ok: "Hélas oui... moins de 80 individus. C'est pourquoi ils comptent tant ❤️"
+    type:'quiz', stop:"🏛 Siem Reap, Cambodge",
+    q:"Combien reste-t-il environ de rhinocéros de Sumatra à l'état sauvage ?",
+    opts:["Moins de 80","Entre 200 et 500","Environ 1 000","Plus de 5 000"],
+    correct:0,
+    ok:"Hélas oui... moins de 80 individus. C'est pourquoi ils comptent tant ❤️"
   },
   {
-    type: 'quiz',
-    stop: "🦁 Kuala Lumpur, Malaisie",
-    q: "Quel animal est le cousin évolutif le plus proche du rhinocéros ?",
-    opts: ["L'éléphant", "L'hippopotame", "Le tapir", "Le zèbre"],
-    correct: 2,
-    ok: "Le tapir ! Même ordre : les Périssodactyles — ongulés à doigts impairs 🧬"
+    type:'quiz', stop:"🦁 Kuala Lumpur, Malaisie",
+    q:"Quel animal est le cousin évolutif le plus proche du rhinocéros ?",
+    opts:["L'éléphant","L'hippopotame","Le tapir","Le zèbre"],
+    correct:2,
+    ok:"Le tapir ! Même ordre : les Périssodactyles — ongulés à doigts impairs 🧬"
   },
   {
-    type: 'quiz',
-    stop: "🦏 Bornéo, Indonésie",
-    q: "Quel est le record mondial de profondeur en apnée sans assistance ?",
-    opts: ["124 m", "172 m", "214 m", "253 m"],
-    correct: 2,
-    ok: "214 m — Herbert Nitsch en 2007. Légendaire 🌊"
+    type:'quiz', stop:"🦏 Bornéo, Indonésie",
+    q:"Quel est le record mondial de profondeur en apnée sans assistance ?",
+    opts:["124 m","172 m","214 m","253 m"],
+    correct:2,
+    ok:"214 m — Herbert Nitsch en 2007. Légendaire 🌊"
   },
   {
-    type: 'tongue',
-    stop: "🎤 Défi final !",
-    phrase: "Les chaussettes de l'archiduchesse sont sèches et archi-sèches",
-    instr: "Tape cette phrase le plus vite possible, sans erreur. Le chrono démarre à la première touche."
+    type:'tongue', stop:"🎤 Défi final !",
+    phrase:"Les chaussettes de l'archiduchesse sont sèches et archi-sèches",
+    instr:"Tape cette phrase le plus vite possible, sans erreur. Le chrono démarre à la première touche."
   }
 ];
 
-// Cruiser SVG Y positions per stop
-const CPOS = [39, 105, 170, 235, 299, 335];
+// Checkpoint positions in the scene (px from left of scene-inner)
+const STOPS = [160, 560, 1000, 1450, 1900, 2350, 2750];
+const LABELS = ["Bangkok","Hanoï","Siem Reap","Kuala Lumpur","Bornéo","Défi !","🎁"];
 
-let qIdx = 0;
-let answered = false;
-let ttTimer = null;
-let ttStart = null;
-let ttDone = false;
+// ─── STATE ───
+let qIdx = 0, answered = false, ttStart = null, ttTimer = null, ttDone = false;
+let carX = 40; // current car left position in scene-inner
 
-// ─── Start ───
+// ─── SCENE BUILD ───
+function buildScene() {
+  const inner = document.getElementById('scene-inner');
+  const W = inner.offsetWidth; // 3800px
+  const H = document.getElementById('scene-wrap').offsetHeight;
+  const groundY = 75; // % from top
+
+  let html = '';
+
+  // Ground strip
+  html += `<div class="ground-strip" style="height:${100-groundY}%; bottom:0;"></div>`;
+
+  // Road
+  html += `<div class="road" style="height:${100-groundY+5}%; bottom:0; left:0; right:0; top:${groundY-5}%;"></div>`;
+
+  // Acacia trees
+  const trees = [
+    {x:80,  scale:.7, h:38},  {x:350, scale:1,  h:52},  {x:620, scale:.8, h:44},
+    {x:900, scale:1.1,h:58},  {x:1150,scale:.75,h:40},  {x:1380,scale:.9, h:48},
+    {x:1650,scale:1,  h:52},  {x:1920,scale:.8, h:44},  {x:2200,scale:1.2,h:62},
+    {x:2450,scale:.85,h:46},  {x:2700,scale:1,  h:52},  {x:2980,scale:.9, h:48},
+  ];
+  trees.forEach(t => {
+    const bottomPx = (100 - groundY) / 100 * H + 2;
+    const crownW = 60 * t.scale;
+    const crownH = 18 * t.scale;
+    const trunkH = t.h * t.scale;
+    const trunkW = 5 * t.scale;
+    html += `<div class="tree" style="left:${t.x}px; bottom:${bottomPx}px;">
+      <div class="tree-top" style="width:${crownW}px;height:${crownH}px;margin-bottom:-1px;"></div>
+      <div class="tree-trunk" style="width:${trunkW}px;height:${trunkH}px;"></div>
+    </div>`;
+  });
+
+  // Small background trees (very small, desaturated, for depth)
+  [200,480,740,1100,1600,2050,2500,2900].forEach((x,i) => {
+    const s = .35 + (i%3)*.05;
+    const bottomPx = (100 - groundY) / 100 * H + 2;
+    html += `<div class="tree" style="left:${x+25}px; bottom:${bottomPx+8}px; opacity:.5; filter:saturate(.4);">
+      <div class="tree-top" style="width:${40*s}px;height:${14*s}px;margin-bottom:-1px;"></div>
+      <div class="tree-trunk" style="width:${4*s}px;height:${30*s}px;"></div>
+    </div>`;
+  });
+
+  // Rhino silhouettes in distance
+  const rhinoDist = [420, 1280, 2160];
+  rhinoDist.forEach(x => {
+    html += `<div class="rhino-dist" style="left:${x}px; bottom:calc(${100-groundY}% + 4px);">🦏</div>`;
+  });
+
+  // Birds
+  for(let i=0;i<6;i++) {
+    const bx = 200 + i*580 + Math.random()*200;
+    const by = 8 + Math.random()*22;
+    html += `<div class="bird" style="left:${bx}px;top:${by}%;">︷</div>`;
+  }
+
+  // Checkpoint flags
+  STOPS.slice(0,-1).forEach((x, i) => {
+    const label = LABELS[i];
+    const bottomPx = (100-groundY)/100 * H + 2;
+    const poleH = 38;
+    html += `<div class="flag" id="flag-${i}" style="left:${x+10}px; bottom:${bottomPx}px;">
+      <div class="flag-banner">${label}</div>
+      <div class="flag-pole" style="height:${poleH}px;"></div>
+    </div>`;
+  });
+
+  inner.innerHTML = html;
+}
+
+// ─── START ───
 function startGame() {
   createFireflies();
   showScreen('game');
-  setTimeout(() => loadQ(0), 100);
+  buildScene();
+  buildProgressDots();
+
+  // Position car at start
+  document.getElementById('car-wrap').style.left = '40px';
+  carX = 40;
+
+  // Short delay then drive to first stop
+  setTimeout(() => driveTo(0, () => loadQ(0)), 400);
 }
 
+// ─── DRIVE CAR ───
+function driveTo(stopIdx, callback) {
+  const targetX = STOPS[stopIdx];
+  const car = document.getElementById('car-wrap');
+  const inner = document.getElementById('scene-inner');
+
+  // Start driving animation
+  car.classList.add('driving');
+  car.classList.remove('stopped');
+  document.querySelectorAll('.whl').forEach(w => w.classList.add('spinning'));
+
+  // Dust particles
+  let dustInterval = setInterval(() => spawnDust(), 120);
+
+  // Animate car position
+  car.style.left = targetX + 'px';
+  carX = targetX;
+
+  // Pan scene
+  panScene(targetX);
+
+  // Stop after transition
+  const duration = 1900;
+  setTimeout(() => {
+    clearInterval(dustInterval);
+    car.classList.remove('driving');
+    car.classList.add('stopped');
+    document.querySelectorAll('.whl').forEach(w => w.classList.remove('spinning'));
+    if (callback) callback();
+  }, duration);
+}
+
+function panScene(carPos) {
+  const wrap = document.getElementById('scene-wrap');
+  const wW = wrap.offsetWidth;
+  const target = wW * 0.28;
+  let tx = target - carPos;
+  tx = Math.min(0, tx);
+  tx = Math.max(-(3800 - wW), tx);
+  document.getElementById('scene-inner').style.transform = `translateX(${tx}px)`;
+}
+
+function spawnDust() {
+  const car = document.getElementById('car-wrap');
+  const r = car.getBoundingClientRect();
+  const wrap = document.getElementById('scene-wrap').getBoundingClientRect();
+  const d = document.createElement('div');
+  d.className = 'dust';
+  const size = 4 + Math.random() * 8;
+  d.style.cssText = `width:${size}px;height:${size}px;left:${r.left - wrap.left + 8}px;top:${r.bottom - wrap.top - size - 4}px;position:absolute;animation-duration:${.5+Math.random()*.4}s;`;
+  document.getElementById('scene-wrap').appendChild(d);
+  setTimeout(() => d.remove(), 700);
+}
+
+// ─── PROGRESS DOTS ───
+function buildProgressDots() {
+  const div = document.getElementById('prog-dots');
+  div.innerHTML = '';
+  QUESTIONS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0?' active':'');
+    d.id = `dot-${i}`;
+    div.appendChild(d);
+    if (i < QUESTIONS.length-1) {
+      const line = document.createElement('div');
+      line.className = 'prog-line';
+      line.style.cssText = 'flex:1;height:2px;background:#3A2000;border-radius:1px;';
+      div.appendChild(line);
+    }
+  });
+}
+
+function updateDots(idx) {
+  QUESTIONS.forEach((_, i) => {
+    const d = document.getElementById(`dot-${i}`);
+    if (!d) return;
+    d.className = 'dot' + (i < idx ? ' done' : i === idx ? ' active' : '');
+  });
+}
+
+// ─── LOAD QUESTION ───
 function loadQ(idx) {
   answered = false;
   const q = QUESTIONS[idx];
-  const total = QUESTIONS.length;
 
-  document.getElementById('prog-fill').style.width = (idx / total * 100) + '%';
+  updateDots(idx);
+  document.getElementById('stop-badge').textContent = '📍 ' + q.stop;
 
-  // Animate labels
-  const sl = document.getElementById('stop-label');
   const qt = document.getElementById('q-text');
-  sl.className = 'slide-in'; qt.className = 'slide-in';
-  sl.textContent = q.stop;
+  qt.style.opacity = '0';
   qt.textContent = q.type === 'quiz' ? q.q : 'Épreuve de vitesse 🏁';
+  setTimeout(() => { qt.style.transition = 'opacity .4s'; qt.style.opacity = '1'; }, 50);
 
   document.getElementById('feedback').textContent = '';
-  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('next-wrap').style.display = 'none';
+
+  // Mark flag as reached
+  const flag = document.getElementById('flag-' + idx);
+  if (flag) flag.classList.add('reached');
 
   if (q.type === 'quiz') {
     document.getElementById('opts').style.display = 'flex';
     document.getElementById('tt-area').style.display = 'none';
-    buildOpts(q, idx);
+    buildOpts(q);
   } else {
     document.getElementById('opts').style.display = 'none';
     buildTT(q);
   }
 }
 
-function buildOpts(q, idx) {
+// ─── OPTIONS ───
+const KEYS = ['A','B','C','D'];
+function buildOpts(q) {
   const div = document.getElementById('opts');
   div.innerHTML = '';
   q.opts.forEach((txt, i) => {
     const b = document.createElement('button');
-    b.className = 'opt slide-in';
-    b.style.animationDelay = (i * 60) + 'ms';
-    b.textContent = txt;
-    b.onclick = () => pickOpt(i, q, b);
+    b.className = 'opt';
+    b.style.animationDelay = (i * 70) + 'ms';
+    b.innerHTML = `<div class="opt-key">${KEYS[i]}</div><span>${txt}</span>`;
+    b.onclick = () => pick(i, q, b);
     div.appendChild(b);
   });
 }
 
-function pickOpt(chosen, q, btn) {
+function pick(chosen, q, btn) {
   if (answered) return;
   answered = true;
   document.querySelectorAll('.opt').forEach(b => b.disabled = true);
-
   const allBtns = document.querySelectorAll('.opt');
-
   if (chosen === q.correct) {
     btn.classList.add('correct');
     document.getElementById('feedback').textContent = '✓ ' + q.ok;
-    advanceCruiser(qIdx + 1);
-    markVisited(qIdx);
     burstAt(btn);
   } else {
     btn.classList.add('wrong');
     allBtns[q.correct].classList.add('correct');
     document.getElementById('feedback').textContent = '✗ Pas tout à fait... La réponse : ' + q.opts[q.correct];
   }
-
-  document.getElementById('next-btn').style.display = 'block';
+  document.getElementById('next-wrap').style.display = 'block';
 }
 
-// ─── Tongue Twister ───
+// ─── TONGUE TWISTER ───
 function buildTT(q) {
   const area = document.getElementById('tt-area');
   area.style.display = 'flex';
-
   document.getElementById('tt-instr').textContent = q.instr;
   document.getElementById('tt-timer').textContent = '00.0';
   document.getElementById('tt-timer').classList.remove('running');
-
-  // Build char spans
   const disp = document.getElementById('tt-display');
   disp.innerHTML = '';
-  [...q.phrase].forEach((ch, i) => {
+  [...q.phrase].forEach(ch => {
     const sp = document.createElement('span');
-    sp.dataset.expected = ch;
-    sp.dataset.idx = i;
+    sp.dataset.exp = ch;
     sp.textContent = ch === ' ' ? ' ' : ch;
     sp.className = 'tc' + (ch === ' ' ? ' sp' : '');
     disp.appendChild(sp);
   });
-
   const inp = document.getElementById('tt-input');
-  inp.value = '';
-  inp.disabled = false;
-  inp.style.display = 'block';
-  inp.focus();
-
+  inp.value = ''; inp.disabled = false; inp.style.display = 'block';
   document.getElementById('tt-result').style.display = 'none';
   ttStart = null; ttDone = false;
-
+  setTimeout(() => inp.focus(), 100);
   inp.oninput = () => handleTT(q.phrase);
 }
 
@@ -689,36 +849,25 @@ function handleTT(target) {
   if (ttDone) return;
   const inp = document.getElementById('tt-input');
   const typed = inp.value;
-
-  // Start timer on first char
   if (!ttStart && typed.length > 0) {
     ttStart = Date.now();
     document.getElementById('tt-timer').classList.add('running');
-    ttTimer = setInterval(updateTimer, 100);
+    ttTimer = setInterval(() => {
+      const s = (Date.now() - ttStart) / 1000;
+      document.getElementById('tt-timer').textContent = s.toFixed(1).padStart(4,'0');
+    }, 100);
   }
-
-  const chars = document.querySelectorAll('#tt-display .tc');
-  chars.forEach((sp, i) => {
-    sp.classList.remove('ok', 'bad');
+  document.querySelectorAll('#tt-display .tc').forEach((sp, i) => {
+    sp.classList.remove('ok','bad');
     if (i < typed.length) {
-      const exp = sp.dataset.expected;
+      const exp = sp.dataset.exp;
       const got = typed[i];
-      // Normalize apostrophes
-      const match = got === exp || (exp === '’' && got === "'") || (exp === "'" && got === '’');
-      sp.className = 'tc' + (exp === ' ' ? ' sp' : '') + ' ' + (match ? 'ok' : 'bad');
+      const match = got === exp || (exp==='’'&&got==="'") || (exp==="'"&&got==='’');
+      sp.className = 'tc' + (exp===' '?' sp':'') + ' ' + (match?'ok':'bad');
     }
   });
-
-  // Normalize comparison
-  const norm = s => s.replace(/’/g, "'");
-  if (norm(typed) === norm(target)) {
-    finishTT();
-  }
-}
-
-function updateTimer() {
-  const secs = (Date.now() - ttStart) / 1000;
-  document.getElementById('tt-timer').textContent = secs.toFixed(1).padStart(4, '0');
+  const norm = s => s.replace(/’/g,"'");
+  if (norm(typed) === norm(target)) finishTT();
 }
 
 function finishTT() {
@@ -728,88 +877,49 @@ function finishTT() {
   document.getElementById('tt-timer').classList.remove('running');
   document.getElementById('tt-timer').textContent = secs.toFixed(1) + 's';
   document.getElementById('tt-input').disabled = true;
-
   const res = document.getElementById('tt-result');
   res.style.display = 'flex';
-
-  let stars, scoreText, msg;
-  if (secs < 12) {
-    stars = '⭐⭐⭐'; scoreText = 'Record absolu !';
-    msg = 'Tu es une machine. Rhino speed activated 🦏💨';
-  } else if (secs < 20) {
-    stars = '⭐⭐⭐'; scoreText = 'Impressionnant !';
-    msg = 'La plongeuse est aussi reine du galimatias 🎤';
-  } else if (secs < 30) {
-    stars = '⭐⭐'; scoreText = 'Bien joué !';
-    msg = 'Un peu d\'entraînement et tu bats le record 😄';
-  } else {
-    stars = '⭐'; scoreText = 'Courageuse !';
-    msg = 'C\'est la plongée qui t\'a fatigué la langue 😂';
-  }
-
+  let stars, score, msg;
+  if      (secs < 12) { stars='⭐⭐⭐'; score='Record absolu !';   msg='Rhino speed activated 🦏💨'; }
+  else if (secs < 20) { stars='⭐⭐⭐'; score='Impressionnant !'; msg='Reine du virelangue 🎤'; }
+  else if (secs < 32) { stars='⭐⭐';   score='Bien joué !';      msg='Un peu d\'entraînement encore 😄'; }
+  else                { stars='⭐';     score='Courageuse !';     msg='C\'est la plongée qui t\'a fatigué la langue 😂'; }
   document.getElementById('tt-stars').textContent = stars;
-  document.getElementById('tt-score-text').textContent = scoreText + ' — ' + secs.toFixed(1) + 's';
+  document.getElementById('tt-score').textContent = score + ' — ' + secs.toFixed(1) + 's';
   document.getElementById('tt-msg').textContent = msg;
-
-  advanceCruiser(qIdx + 1);
-  markVisited(qIdx);
-  document.getElementById('next-btn').style.display = 'block';
+  document.getElementById('next-wrap').style.display = 'block';
 }
 
-// ─── Navigation ───
+// ─── NEXT ───
 function nextQ() {
-  qIdx++;
-  if (qIdx >= QUESTIONS.length) {
-    endGame();
-  } else {
-    updateCurrent(qIdx);
-    loadQ(qIdx);
+  const nextIdx = qIdx + 1;
+  if (nextIdx >= QUESTIONS.length) {
+    // Drive to final stop then end
+    driveTo(STOPS.length - 1, () => {
+      setTimeout(() => {
+        showScreen('final-msg-screen');
+        setTimeout(launchConfetti, 600);
+      }, 400);
+    });
+    qIdx++;
+    return;
   }
+  qIdx = nextIdx;
+  document.getElementById('next-wrap').style.display = 'none';
+  driveTo(qIdx, () => loadQ(qIdx));
 }
 
-// ─── SVG Map ───
-function markVisited(idx) {
-  const dot = document.getElementById('s' + idx);
-  if (dot) {
-    dot.classList.remove('current');
-    dot.classList.add('visited');
-    dot.setAttribute('fill', 'var(--accent)');
-  }
-  const line = document.getElementById('l' + idx + (idx + 1));
-  if (line) line.classList.add('lit');
-}
-
-function updateCurrent(idx) {
-  const dot = document.getElementById('s' + idx);
-  if (dot) {
-    dot.setAttribute('fill', 'var(--deep)');
-    dot.classList.add('current');
-  }
-}
-
-function advanceCruiser(toIdx) {
-  const y = CPOS[Math.min(toIdx, CPOS.length - 1)];
-  const el = document.getElementById('cruiser');
-  el.setAttribute('y', y);
-}
-
-// ─── End ───
-function endGame() {
-  document.getElementById('prog-fill').style.width = '100%';
-  document.getElementById('s-final').setAttribute('opacity', '1');
-  setTimeout(() => {
-    showScreen('final');
-    setTimeout(launchConfetti, 900);
-  }, 500);
-}
-
-// ─── Screens ───
+// ─── SCREENS ───
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
+function showGift() {
+  showScreen('gift-screen');
+  setTimeout(launchConfetti, 400);
+}
 
-// ─── Confetti ───
+// ─── CONFETTI ───
 function launchConfetti() {
   const colors = ['#FF8F00','#E65100','#2E7D32','#1565C0','#F5E6C8','#FFF176','#fff','#FF7043'];
   for (let i = 0; i < 90; i++) {
@@ -825,30 +935,27 @@ function launchConfetti() {
       el.style.animationDuration = (2.5 + Math.random() * 3.5) + 's';
       document.body.appendChild(el);
       setTimeout(() => el.remove(), 6500);
-    }, i * 55);
+    }, i * 50);
   }
 }
 
-// ─── Mini burst on correct answer ───
+// ─── BURST ───
 function burstAt(btn) {
   const r = btn.getBoundingClientRect();
-  const cx = r.left + r.width / 2;
-  const cy = r.top + r.height / 2;
+  const cx = r.left + r.width/2, cy = r.top + r.height/2;
   const colors = ['#FF8F00','#FFD600','#2E7D32','#fff'];
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 14; i++) {
     const el = document.createElement('div');
     el.className = 'spark';
-    const angle = (i / 12) * 360;
-    const dist = 40 + Math.random() * 50;
-    const dx = Math.cos(angle * Math.PI / 180) * dist;
-    const dy = Math.sin(angle * Math.PI / 180) * dist;
-    el.style.cssText = `left:${cx}px;top:${cy}px;background:${colors[i%colors.length]};--dx:${dx}px;--dy:${dy}px;animation-duration:${.5+Math.random()*.3}s;`;
+    const angle = (i/14)*360;
+    const dist = 35 + Math.random()*55;
+    el.style.cssText = `left:${cx}px;top:${cy}px;width:8px;height:8px;background:${colors[i%colors.length]};--dx:${Math.cos(angle*Math.PI/180)*dist}px;--dy:${Math.sin(angle*Math.PI/180)*dist}px;animation-duration:${.45+Math.random()*.3}s;`;
     document.body.appendChild(el);
-    setTimeout(() => el.remove(), 900);
+    setTimeout(() => el.remove(), 800);
   }
 }
 
-// ─── Copy code ───
+// ─── COPY ───
 function copyCode(el) {
   navigator.clipboard.writeText(el.textContent.trim()).then(() => {
     const orig = el.textContent;
@@ -857,24 +964,20 @@ function copyCode(el) {
   });
 }
 
-// ─── Intro fireflies ───
+// ─── FIREFLIES ───
 function createFireflies() {
   const intro = document.getElementById('intro');
-  for (let i = 0; i < 18; i++) {
+  for (let i = 0; i < 20; i++) {
     const ff = document.createElement('div');
     ff.className = 'ff';
-    const size = 2 + Math.random() * 4;
-    ff.style.cssText = `
-      width:${size}px; height:${size}px;
-      left:${Math.random()*100}%;
-      animation-duration:${6+Math.random()*10}s;
-      animation-delay:${Math.random()*8}s;
-      opacity:0;
-      filter: blur(${Math.random()>.5?1:0}px);
-    `;
+    const s = 2 + Math.random() * 4;
+    ff.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${7+Math.random()*9}s;animation-delay:${Math.random()*9}s;opacity:0;filter:blur(${Math.random()>.5?1:0}px);`;
     intro.appendChild(ff);
   }
 }
+
+// ─── RESIZE ───
+window.addEventListener('resize', () => { if (carX > 0) panScene(carX); });
 </script>
 </body>
 </html>
