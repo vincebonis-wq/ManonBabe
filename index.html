@@ -688,24 +688,17 @@ function startGame() {
 function driveTo(stopIdx, callback) {
   const targetX = STOPS[stopIdx];
   const car = document.getElementById('car-wrap');
-  const inner = document.getElementById('scene-inner');
 
-  // Start driving animation
   car.classList.add('driving');
   car.classList.remove('stopped');
   document.querySelectorAll('.whl').forEach(w => w.classList.add('spinning'));
 
-  // Dust particles
   let dustInterval = setInterval(() => spawnDust(), 120);
 
-  // Animate car position
-  car.style.left = targetX + 'px';
+  // panScene moves both background AND car to keep car at 28% of viewport
   carX = targetX;
-
-  // Pan scene
   panScene(targetX);
 
-  // Stop after transition
   const duration = 1900;
   setTimeout(() => {
     clearInterval(dustInterval);
@@ -719,11 +712,12 @@ function driveTo(stopIdx, callback) {
 function panScene(carPos) {
   const wrap = document.getElementById('scene-wrap');
   const wW = wrap.offsetWidth;
-  const target = wW * 0.28;
-  let tx = target - carPos;
+  let tx = wW * 0.28 - carPos;
   tx = Math.min(0, tx);
   tx = Math.max(-(3800 - wW), tx);
   document.getElementById('scene-inner').style.transform = `translateX(${tx}px)`;
+  // Keep car at its correct viewport position (scene coord + pan offset)
+  document.getElementById('car-wrap').style.left = (carPos + tx) + 'px';
 }
 
 function spawnDust() {
