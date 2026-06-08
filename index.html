@@ -409,6 +409,47 @@
     }
     .selfie-btn:hover { transform: translateY(-2px); }
 
+    /* ─── RHINO BUDDY ─── */
+    #rhino-buddy {
+      position: absolute; bottom: 10px; right: 14px;
+      font-size: 28px; z-index: 20;
+      user-select: none; pointer-events: none;
+      transition: transform .1s;
+    }
+    .rhino-bounce { animation: rhinoBounce .55s ease !important; }
+    .rhino-shake  { animation: rhinoShake  .4s  ease !important; }
+    @keyframes rhinoBounce { 0%,100%{transform:translateY(0) rotate(0)} 35%{transform:translateY(-22px) rotate(-12deg)} 65%{transform:translateY(-10px) rotate(6deg)} }
+    @keyframes rhinoShake  { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+    .rhino-heart { position:fixed; pointer-events:none; animation:heartFloat .9s ease forwards; }
+    @keyframes heartFloat { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-52px) scale(.5)} }
+
+    /* ─── MAP SCREEN ─── */
+    .map-content {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 10px; padding: 24px 20px; color: #F5E6C8; text-align: center;
+      max-height: 100vh; overflow-y: auto;
+    }
+    .map-title { font-size: 1.55em; font-weight: bold; }
+    .map-sub   { font-size: .8em; opacity: .65; font-style: italic; }
+    .map-svg-wrap {
+      width: 100%; max-width: 300px; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 8px 36px rgba(0,0,0,.55);
+    }
+    #travel-map { display:block; width:100%; height:auto; }
+    .map-city { opacity: 0; transition: opacity .4s ease; }
+    .map-city.visible { opacity: 1; }
+    @keyframes mapPing { 0%,100%{r:9;opacity:.5} 50%{r:15;opacity:0} }
+    .ping { animation: mapPing 2.2s ease-in-out infinite; }
+
+    /* ─── TYPEWRITER ─── */
+    .tw-cursor {
+      display: inline-block; width: 2px; height: 1.05em;
+      background: var(--accent); vertical-align: text-bottom;
+      margin-left: 1px;
+    }
+    .tw-cursor.blink { animation: twBlink .9s step-end infinite; }
+    @keyframes twBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+
     /* ══ SHARED FX ══ */
     .spark { position: fixed; border-radius: 2px; pointer-events: none; animation: sparkFly linear forwards; }
     @keyframes sparkFly { 0%{opacity:1} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(720deg) scale(.2)} }
@@ -520,7 +561,8 @@
   </div>
 
   <!-- QUESTION PANEL -->
-  <div id="q-panel">
+  <div id="q-panel" style="position:relative">
+    <div id="rhino-buddy">🦏</div>
     <div id="q-inner">
       <!-- Progress -->
       <div id="prog-dots"></div>
@@ -589,19 +631,92 @@
   </div>
 </div>
 
+<!-- ═══ CARTE VOYAGE ═══ -->
+<div class="screen hidden" id="map-screen" style="background:radial-gradient(ellipse at 50% 40%,#0D2448 0%,#060B14 70%);">
+  <div class="map-content">
+    <div class="map-title">Notre aventure 🌏</div>
+    <div class="map-sub">4 mois · 6 escales · un monde à explorer</div>
+    <div class="map-svg-wrap">
+      <svg id="travel-map" viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="340" fill="#0D2A4A"/>
+        <!-- ── Terres simplifiées ── -->
+        <!-- Chine / côte Shanghai -->
+        <path d="M 148,0 Q 185,0 220,8 Q 238,18 242,36 Q 228,50 212,44 Q 194,36 172,24 Q 154,14 148,4 Z" fill="#2A5A1A" opacity=".75"/>
+        <!-- Taiwan -->
+        <ellipse cx="210" cy="80" rx="7" ry="14" fill="#2A5A1A" opacity=".6"/>
+        <!-- Indochine (Vietnam + péninsule) -->
+        <path d="M 0,55 Q 38,44 60,68 Q 70,96 68,132 Q 65,164 58,188 Q 48,212 40,232 L 32,255 Q 26,272 22,288 L 0,288 Z" fill="#2A5A1A" opacity=".75"/>
+        <path d="M 60,68 Q 84,74 88,105 Q 90,136 84,162 Q 78,185 68,190" fill="none" stroke="#2A5A1A" stroke-width="13" stroke-linecap="round" opacity=".75"/>
+        <!-- Péninsule malaise -->
+        <path d="M 38,232 Q 44,250 40,268 Q 36,284 30,300 Q 26,316 22,332 L 14,340 L 6,340 Q 10,322 14,305 Q 18,286 22,268 Q 26,250 28,234 Z" fill="#2A5A1A" opacity=".65"/>
+        <!-- Sumatra (partielle) -->
+        <path d="M 0,254 Q 20,245 46,250 Q 68,258 74,272 Q 70,283 52,285 Q 28,287 6,281 Q 0,274 0,262 Z" fill="#2A5A1A" opacity=".65"/>
+        <!-- Bornéo -->
+        <path d="M 88,182 Q 116,173 145,177 Q 172,183 186,202 Q 194,222 187,246 Q 177,265 154,271 Q 128,275 104,266 Q 82,252 79,227 Q 76,205 83,192 Z" fill="#2A5A1A" opacity=".75"/>
+        <!-- Sulawesi -->
+        <path d="M 192,238 Q 208,230 220,243 Q 225,258 215,268 Q 204,273 193,265 Q 185,254 188,242 Z" fill="#2A5A1A" opacity=".65"/>
+        <path d="M 216,243 Q 230,234 242,245 Q 246,256 235,262 Q 225,264 216,256 Z" fill="#2A5A1A" opacity=".6"/>
+        <!-- Philippines — Luzon -->
+        <path d="M 204,110 Q 218,102 228,115 Q 234,134 225,151 Q 215,161 203,154 Q 193,143 195,126 Q 196,114 204,110 Z" fill="#2A5A1A" opacity=".75"/>
+        <!-- Philippines — Visayas (Cebu/Leyte) -->
+        <path d="M 217,164 Q 233,158 246,168 Q 252,182 243,192 Q 231,197 217,191 Q 207,181 211,168 Z" fill="#2A5A1A" opacity=".7"/>
+        <!-- Philippines — Mindanao -->
+        <path d="M 213,198 Q 237,192 256,207 Q 263,226 253,240 Q 237,250 216,244 Q 200,232 202,212 Z" fill="#2A5A1A" opacity=".7"/>
+        <!-- Java -->
+        <path d="M 42,302 Q 80,294 122,298 Q 148,302 154,311 Q 148,321 118,323 Q 80,325 47,318 Q 35,312 42,302 Z" fill="#2A5A1A" opacity=".75"/>
+        <!-- Bali + petites îles -->
+        <path d="M 156,311 Q 174,308 194,311 Q 202,318 196,326 Q 176,330 157,323 Q 149,316 156,311 Z" fill="#2A5A1A" opacity=".7"/>
+        <!-- Flores (Labuan Bajo) -->
+        <path d="M 197,311 Q 214,307 230,311 Q 237,319 229,326 Q 213,330 197,323 Q 189,316 197,311 Z" fill="#2A5A1A" opacity=".65"/>
+
+        <!-- ── Route animée ── -->
+        <path id="route-path"
+          d="M 215,21 L 148,314 L 252,176 L 241,168 L 153,314 L 199,314"
+          fill="none" stroke="#FF8F00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+          stroke-dasharray="750" stroke-dashoffset="750" opacity=".9"/>
+
+        <!-- ── Villes ── -->
+        <g class="map-city" id="mc-0">
+          <circle cx="215" cy="21" r="5" fill="#FF8F00"/>
+          <circle cx="215" cy="21" r="9" fill="none" stroke="#FF8F00" stroke-width="1.5" opacity=".5" class="ping"/>
+          <text x="220" y="17" fill="#F5E6C8" font-size="9.5" font-family="Georgia,serif">Shanghai</text>
+        </g>
+        <g class="map-city" id="mc-1">
+          <circle cx="148" cy="314" r="4.5" fill="#FF8F00"/>
+          <text x="106" y="312" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Seseh</text>
+        </g>
+        <g class="map-city" id="mc-2">
+          <circle cx="252" cy="176" r="4.5" fill="#FF8F00"/>
+          <text x="256" y="180" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Pintuyan</text>
+        </g>
+        <g class="map-city" id="mc-3">
+          <circle cx="241" cy="168" r="4.5" fill="#FF8F00"/>
+          <text x="208" y="163" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Malapascua</text>
+        </g>
+        <g class="map-city" id="mc-4">
+          <circle cx="158" cy="314" r="4.5" fill="#FF8F00"/>
+          <text x="156" y="330" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Ubud</text>
+        </g>
+        <g class="map-city" id="mc-5">
+          <circle cx="199" cy="314" r="4.5" fill="#FF8F00"/>
+          <text x="180" y="306" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Labuan Bajo</text>
+        </g>
+      </svg>
+    </div>
+    <button class="btn" id="map-next-btn" onclick="showFinalMsg()" style="display:none">
+      Lire ta lettre 💛
+    </button>
+  </div>
+</div>
+
 <!-- ═══ FINAL: Message ═══ -->
 <div class="screen hidden" id="final-msg-screen">
   <div class="content">
     <div class="trophy">🏆</div>
     <h1>Safari accompli&nbsp;! 🎉</h1>
     <div class="msg-divider"></div>
-    <p class="msg-text">
-      Ce cadeau est pour toi — pour nourrir<br>
-      <em>le projet qui te tient tant à cœur.</em><br><br>
-      Parce que tes rêves méritent les meilleurs outils,<br>
-      et que je crois en toi plus que tout. 💛
-    </p>
-    <button class="btn" onclick="showGift()" style="animation:fadeUp .8s ease 1s both">
+    <div id="tw-msg" class="msg-text"></div>
+    <button class="btn" id="final-msg-btn" onclick="showGift()" style="display:none">
       Voir la surprise →
     </button>
   </div>
@@ -767,6 +882,7 @@ function buildScene() {
 
 // ─── START ───
 function startGame() {
+  startAmbientSound();
   createFireflies();
   showScreen('game');
   buildScene();
@@ -917,10 +1033,12 @@ function pick(chosen, q, btn) {
     btn.classList.add('correct');
     document.getElementById('feedback').textContent = '✓ ' + q.ok;
     burstAt(btn);
+    rhinoReact(true);
   } else {
     btn.classList.add('wrong');
     allBtns[q.correct].classList.add('correct');
     document.getElementById('feedback').textContent = '✗ Pas tout à fait... La réponse : ' + q.opts[q.correct];
+    rhinoReact(false);
   }
   document.getElementById('next-wrap').style.display = 'block';
 }
@@ -1108,12 +1226,8 @@ function selfieOk() {
 function nextQ() {
   const nextIdx = qIdx + 1;
   if (nextIdx >= QUESTIONS.length) {
-    // Drive to final stop then end
     driveTo(STOPS.length - 1, () => {
-      setTimeout(() => {
-        showScreen('final-msg-screen');
-        setTimeout(launchConfetti, 600);
-      }, 400);
+      setTimeout(() => showMapScreen(), 400);
     });
     qIdx++;
     return;
@@ -1131,6 +1245,144 @@ function showScreen(id) {
 function showGift() {
   showScreen('gift-screen');
   setTimeout(launchConfetti, 400);
+}
+
+// ─── CARTE VOYAGE ───
+function showMapScreen() {
+  showScreen('map-screen');
+  setTimeout(() => {
+    const path = document.getElementById('route-path');
+    path.style.transition = 'stroke-dashoffset 3s ease-in-out';
+    path.style.strokeDashoffset = '0';
+    setTimeout(() => {
+      document.querySelectorAll('.map-city').forEach((c, i) => {
+        setTimeout(() => c.classList.add('visible'), i * 380);
+      });
+      setTimeout(() => {
+        const btn = document.getElementById('map-next-btn');
+        btn.style.display = 'block';
+        btn.style.animation = 'fadeUp .6s ease';
+      }, 6 * 380 + 500);
+    }, 3200);
+  }, 300);
+}
+
+// ─── LETTRE TYPEWRITER ───
+function showFinalMsg() {
+  showScreen('final-msg-screen');
+  setTimeout(launchConfetti, 400);
+  setTimeout(typewriteLetter, 900);
+}
+
+function typewriteLetter() {
+  const el = document.getElementById('tw-msg');
+  const lines = [
+    "Ce cadeau est pour toi — pour nourrir",
+    "le projet qui te tient tant à cœur.",
+    "",
+    "Parce que tes rêves méritent les meilleurs outils,",
+    "et que je crois en toi plus que tout. 💛"
+  ];
+  const text = lines.join('\n');
+  el.innerHTML = '';
+  const cursor = document.createElement('span');
+  cursor.className = 'tw-cursor';
+  el.appendChild(cursor);
+  const chars = [...text];
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i >= chars.length) {
+      clearInterval(iv);
+      cursor.classList.add('blink');
+      setTimeout(() => {
+        const btn = document.getElementById('final-msg-btn');
+        btn.style.display = 'block';
+        btn.style.animation = 'fadeUp .7s ease';
+      }, 600);
+      return;
+    }
+    const ch = chars[i++];
+    if (ch === '\n') cursor.insertAdjacentElement('beforebegin', document.createElement('br'));
+    else cursor.insertAdjacentText('beforebegin', ch);
+  }, 34);
+}
+
+// ─── RHINO BUDDY ───
+function rhinoReact(good) {
+  const r = document.getElementById('rhino-buddy');
+  if (!r) return;
+  r.classList.remove('rhino-bounce','rhino-shake');
+  void r.offsetWidth; // reflow
+  r.classList.add(good ? 'rhino-bounce' : 'rhino-shake');
+  r.addEventListener('animationend', () => r.classList.remove('rhino-bounce','rhino-shake'), {once:true});
+  if (good) {
+    const br = r.getBoundingClientRect();
+    ['💛','💛','✨'].forEach((em, i) => {
+      setTimeout(() => {
+        const h = document.createElement('div');
+        h.className = 'rhino-heart';
+        h.textContent = em;
+        h.style.cssText = `left:${br.left + br.width/2 + (Math.random()-.5)*35}px;top:${br.top - 5}px;font-size:${16+Math.random()*10}px;`;
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 1000);
+      }, i * 130);
+    });
+  }
+}
+
+// ─── SONS AMBIANTS ───
+let audioCtx = null;
+
+function startAmbientSound() {
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Bruit rose (vent safari)
+    const sr = audioCtx.sampleRate;
+    const buf = audioCtx.createBuffer(1, sr * 4, sr);
+    const d = buf.getChannelData(0);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i = 0; i < d.length; i++) {
+      const w = Math.random()*2-1;
+      b0=.99886*b0+w*.0555179; b1=.99332*b1+w*.0750759;
+      b2=.96900*b2+w*.1538520; b3=.86650*b3+w*.3104856;
+      b4=.55000*b4+w*.5329522; b5=-.7616*b5-w*.0168980;
+      d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.075; b6=w*.115926;
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buf; noise.loop = true;
+    const lpf = audioCtx.createBiquadFilter();
+    lpf.type = 'lowpass'; lpf.frequency.value = 550;
+    const gainW = audioCtx.createGain(); gainW.gain.value = 0.03;
+    noise.connect(lpf); lpf.connect(gainW); gainW.connect(audioCtx.destination);
+    noise.start();
+    scheduleBirds();
+  } catch(e) {}
+}
+
+function scheduleBirds() {
+  if (!audioCtx) return;
+  setTimeout(() => { chirp(); scheduleBirds(); }, (4 + Math.random() * 9) * 1000);
+}
+
+function chirp() {
+  if (!audioCtx) return;
+  const n = 1 + Math.floor(Math.random() * 3);
+  for (let i = 0; i < n; i++) {
+    setTimeout(() => {
+      const osc = audioCtx.createOscillator();
+      const g   = audioCtx.createGain();
+      const f   = 900 + Math.random() * 1400;
+      const t   = audioCtx.currentTime;
+      osc.frequency.setValueAtTime(f, t);
+      osc.frequency.exponentialRampToValueAtTime(f * (1.1 + Math.random() * .6), t + .07);
+      osc.frequency.exponentialRampToValueAtTime(f * .85, t + .2);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(.07, t + .02);
+      g.gain.exponentialRampToValueAtTime(.001, t + .24);
+      osc.connect(g); g.connect(audioCtx.destination);
+      osc.start(t); osc.stop(t + .28);
+    }, i * 145);
+  }
 }
 
 // ─── CONFETTI ───
