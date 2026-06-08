@@ -143,7 +143,7 @@
     .flag {
       position: absolute;
       display: flex; flex-direction: column; align-items: center;
-      z-index: 5;
+      z-index: 8;
     }
     .flag-banner {
       background: var(--accent); color: #fff;
@@ -155,14 +155,6 @@
       width: 2px; background: #8B6010;
     }
     .flag.reached .flag-banner { background: var(--green); }
-
-    /* Flags overlay layer (above car) */
-    #flags-layer {
-      position: absolute; top: 0; left: 0;
-      width: 4200px; height: 100%;
-      pointer-events: none; z-index: 15;
-      transition: transform 1.8s cubic-bezier(.25,.46,.45,.94);
-    }
 
     /* Dust particles */
     .dust {
@@ -180,7 +172,7 @@
     /* Land Cruiser wrapper */
     #car-wrap {
       position: absolute;
-      z-index: 10;
+      z-index: 2;
       transition: left 1.8s cubic-bezier(.25,.46,.45,.94);
     }
     #car-wrap.driving { animation: carBounce .22s ease-in-out infinite; }
@@ -504,10 +496,7 @@
       <!-- populated by JS -->
     </div>
 
-    <!-- Flags layer (above car) -->
-    <div id="flags-layer"></div>
-
-    <!-- Land Cruiser (outside scene-inner, on top) -->
+    <!-- Land Cruiser (moved into scene-inner by buildScene()) -->
     <div id="car-wrap" style="bottom:22%">
       <svg id="car-svg" viewBox="0 0 170 90" width="170" height="90" xmlns="http://www.w3.org/2000/svg">
         <!-- Shadow -->
@@ -986,21 +975,22 @@ function buildScene() {
     html += `<div class="bird" style="left:${bx}px;top:${by}%;">︷</div>`;
   }
 
-  inner.innerHTML = html;
-
-  // Checkpoint flags — in separate overlay layer so they appear above the car
-  const flagsLayer = document.getElementById('flags-layer');
-  let flagsHtml = '';
+  // Checkpoint flags (inside scene-inner, z-index 8 > car z-index 2)
   STOPS.slice(0,-1).forEach((x, i) => {
     const label = LABELS[i];
     const bottomPx = (100-groundY)/100 * H + 2;
     const poleH = 38;
-    flagsHtml += `<div class="flag" id="flag-${i}" style="left:${x+10}px; bottom:${bottomPx}px;">
+    html += `<div class="flag" id="flag-${i}" style="left:${x+10}px; bottom:${bottomPx}px;">
       <div class="flag-banner">${label}</div>
       <div class="flag-pole" style="height:${poleH}px;"></div>
     </div>`;
   });
-  flagsLayer.innerHTML = flagsHtml;
+
+  inner.innerHTML = html;
+
+  // Move car-wrap into scene-inner so z-index ordering with flags works correctly
+  const carWrap = document.getElementById('car-wrap');
+  inner.appendChild(carWrap);
 }
 
 // ─── START ───
@@ -1051,10 +1041,8 @@ function panScene(carPos) {
   tx = Math.min(0, tx);
   tx = Math.max(-(4200 - wW), tx);
   document.getElementById('scene-inner').style.transform = `translateX(${tx}px)`;
-  const fl = document.getElementById('flags-layer');
-  if (fl) fl.style.transform = `translateX(${tx}px)`;
-  // Keep car at its correct viewport position (scene coord + pan offset)
-  document.getElementById('car-wrap').style.left = (carPos + tx) + 'px';
+  // Car is inside scene-inner, position in scene coordinates
+  document.getElementById('car-wrap').style.left = carPos + 'px';
 }
 
 function spawnDust() {
