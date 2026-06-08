@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joyeux Anniversaire Manon 🎉</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #2C1810;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease;
+    }
+
+    .screen.hidden { opacity: 0; pointer-events: none; }
+
+    /* ── INTRO ── */
+    #intro {
+      background: radial-gradient(ellipse at 50% 40%, #5D4037 0%, #1B0000 100%);
+      flex-direction: column;
+      text-align: center;
+      padding: 40px 20px;
+      color: #F5E6C8;
+    }
+
+    #intro .rhino { font-size: 90px; animation: float 3s ease-in-out infinite; display: block; margin-bottom: 20px; }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-12px) rotate(3deg); }
+    }
+
+    #intro h1 { font-size: clamp(1.8em, 5vw, 3em); text-shadow: 0 2px 20px rgba(255,143,0,.6); margin-bottom: 12px; }
+    #intro p  { font-size: 1.1em; opacity: .8; margin-bottom: 36px; line-height: 1.5; }
+
+    .btn {
+      background: linear-gradient(135deg, #FF8F00, #E65100);
+      color: #fff;
+      border: none;
+      padding: 14px 44px;
+      font-size: 1.15em;
+      border-radius: 40px;
+      cursor: pointer;
+      font-family: 'Georgia', serif;
+      letter-spacing: .5px;
+      box-shadow: 0 6px 24px rgba(255,143,0,.4);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,143,0,.6); }
+    .btn:active { transform: translateY(0); }
+
+    /* ── GAME ── */
+    #game {
+      background: #F5E6C8;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 0;
+      padding: 0;
+    }
+
+    /* Left panel: route map */
+    #map-panel {
+      width: 220px;
+      flex-shrink: 0;
+      background: #E8D5A3;
+      border-right: 3px solid #C4A265;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #map-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(139,69,19,.06) 0%, transparent 60%),
+        radial-gradient(circle at 80% 70%, rgba(46,125,50,.06) 0%, transparent 60%);
+    }
+
+    #map-title {
+      font-size: .75em;
+      color: #8B4513;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      z-index: 1;
+    }
+
+    #route-svg {
+      width: 100%;
+      max-width: 180px;
+      z-index: 1;
+    }
+
+    /* Right panel: question */
+    #question-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 36px;
+      color: #3E2723;
+      justify-content: center;
+      max-width: 540px;
+    }
+
+    #progress-bar {
+      height: 6px;
+      background: #D7CCC8;
+      border-radius: 3px;
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    #progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF8F00, #E65100);
+      border-radius: 3px;
+      transition: width .7s ease;
+    }
+
+    #stop-label {
+      font-size: .85em;
+      color: #8B4513;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    #question-text {
+      font-size: clamp(1em, 2.5vw, 1.3em);
+      color: #3E2723;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    #options { display: flex; flex-direction: column; gap: 10px; }
+
+    .opt-btn {
+      text-align: left;
+      background: #fff;
+      color: #3E2723;
+      border: 2px solid #D7CCC8;
+      padding: 12px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: .95em;
+      font-family: 'Georgia', serif;
+      transition: border-color .15s, background .15s, transform .1s;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: #FF8F00; background: #FFF8E1; transform: translateX(4px); }
+    .opt-btn.correct { background: #E8F5E9; border-color: #2E7D32; color: #1B5E20; }
+    .opt-btn.wrong   { background: #FFEBEE; border-color: #C62828; color: #B71C1C; }
+    .opt-btn:disabled { cursor: default; }
+
+    #feedback {
+      margin-top: 18px;
+      font-size: .95em;
+      min-height: 26px;
+      color: #4E342E;
+      font-style: italic;
+      line-height: 1.4;
+    }
+
+    #next-btn { margin-top: 20px; display: none; }
+
+    /* ── FINAL ── */
+    #final {
+      flex-direction: column;
+      text-align: center;
+      padding: 30px 20px;
+      color: #F5E6C8;
+      background: radial-gradient(ellipse at 50% 60%, #5D3A00 0%, #1A0A00 80%);
+      overflow: hidden;
+    }
+
+    #final h1 { font-size: clamp(1.6em, 5vw, 2.6em); margin-bottom: 12px; text-shadow: 0 2px 20px rgba(255,143,0,.7); }
+    #final p  { font-size: 1.05em; opacity: .85; margin-bottom: 28px; max-width: 480px; line-height: 1.6; }
+
+    .gift-card {
+      background: linear-gradient(135deg, #FF8F00 0%, #E65100 60%, #BF360C 100%);
+      border-radius: 20px;
+      padding: 28px 36px;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 16px 60px rgba(0,0,0,.5);
+      position: relative;
+      animation: slideUp .8s ease .2s both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .gift-card .gc-logo { font-size: 2em; margin-bottom: 8px; }
+    .gift-card .gc-title { font-size: .85em; letter-spacing: 2px; text-transform: uppercase; opacity: .8; margin-bottom: 6px; }
+    .gift-card .gc-brand { font-size: 1.5em; font-weight: bold; margin-bottom: 16px; }
+    .gift-card .gc-amount { font-size: 2.8em; font-weight: bold; margin-bottom: 16px; line-height: 1; }
+    .gift-card .gc-code-label { font-size: .8em; opacity: .7; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .gift-card .gc-code {
+      font-family: 'Courier New', monospace;
+      font-size: 1.3em;
+      letter-spacing: 4px;
+      background: rgba(0,0,0,.25);
+      padding: 10px 16px;
+      border-radius: 10px;
+      word-break: break-all;
+    }
+    .gift-card .gc-from { margin-top: 16px; font-size: .85em; opacity: .75; font-style: italic; }
+
+    /* confetti */
+    .confetti {
+      position: fixed;
+      width: 10px; height: 10px;
+      border-radius: 2px;
+      pointer-events: none;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(105vh) rotate(800deg); opacity: 0; }
+    }
+
+    /* route SVG styles */
+    .stop-circle { transition: fill .4s, r .4s; }
+    .stop-circle.visited { fill: #FF8F00; }
+    .stop-circle.current { fill: #E65100; }
+    .stop-label-text { font-size: 9px; fill: #5D4037; font-family: Georgia, serif; }
+    .route-line { stroke: #C4A265; stroke-width: 2; stroke-dasharray: 5,4; fill: none; }
+    .route-line.done { stroke: #FF8F00; stroke-dasharray: none; }
+
+    /* responsive */
+    @media (max-width: 600px) {
+      #game { flex-direction: column; overflow-y: auto; }
+      #map-panel { width: 100%; height: 200px; border-right: none; border-bottom: 3px solid #C4A265; }
+      #route-svg { max-width: 300px; }
+      #question-panel { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ INTRO ═══════════════════════════════ -->
+<div class="screen" id="intro">
+  <span class="rhino">🦏</span>
+  <h1>Joyeux Anniversaire<br>Manon&nbsp;! 🎂</h1>
+  <p>Un petit road trip en ton honneur...<br>Réponds aux questions pour débloquer ta surprise 🎁</p>
+  <button class="btn" onclick="startGame()">Démarrer l'aventure 🚙</button>
+</div>
+
+<!-- ═══════════════════════════════ GAME ══════════════════════════════════ -->
+<div class="screen hidden" id="game">
+
+  <!-- Left: route map -->
+  <div id="map-panel">
+    <div id="map-title">🗺️ Notre route</div>
+    <svg id="route-svg" viewBox="0 0 160 340" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Route lines (drawn below circles) -->
+      <line id="line-0-1" class="route-line" x1="80" y1="40"  x2="80" y2="95"/>
+      <line id="line-1-2" class="route-line" x1="80" y1="105" x2="80" y2="160"/>
+      <line id="line-2-3" class="route-line" x1="80" y1="170" x2="80" y2="225"/>
+      <line id="line-3-4" class="route-line" x1="80" y1="235" x2="80" y2="290"/>
+      <line id="line-4-5" class="route-line" x1="80" y1="300" x2="80" y2="330"/>
+
+      <!-- Stop 0: Bangkok -->
+      <circle id="stop-0" class="stop-circle current" cx="80" cy="33" r="10"/>
+      <text class="stop-label-text" x="96" y="37">🌴 Bangkok</text>
+
+      <!-- Stop 1: Hanoï -->
+      <circle id="stop-1" class="stop-circle" cx="80" cy="98" r="9" fill="#D7CCC8"/>
+      <text class="stop-label-text" x="96" y="102">🌊 Hanoï</text>
+
+      <!-- Stop 2: Siem Reap -->
+      <circle id="stop-2" class="stop-circle" cx="80" cy="163" r="9" fill="#D7CCC8"/>
+      <text class="stop-label-text" x="96" y="167">🏛️ Siem Reap</text>
+
+      <!-- Stop 3: Kuala Lumpur -->
+      <circle id="stop-3" class="stop-circle" cx="80" cy="228" r="9" fill="#D7CCC8"/>
+      <text class="stop-label-text" x="96" y="232">🦁 Kuala Lumpur</text>
+
+      <!-- Stop 4: Bornéo -->
+      <circle id="stop-4" class="stop-circle" cx="80" cy="293" r="9" fill="#D7CCC8"/>
+      <text class="stop-label-text" x="96" y="297">🦏 Bornéo</text>
+
+      <!-- Stop 5: Final star -->
+      <text id="stop-final" x="62" y="340" font-size="22" opacity=".3">🎁</text>
+
+      <!-- Land Cruiser -->
+      <text id="cruiser" x="46" y="40" font-size="22" style="transition: y 1s ease, x 1s ease;">🚙</text>
+    </svg>
+  </div>
+
+  <!-- Right: question -->
+  <div id="question-panel">
+    <div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+    <div id="stop-label"></div>
+    <div id="question-text"></div>
+    <div id="options"></div>
+    <div id="feedback"></div>
+    <button class="btn" id="next-btn" onclick="nextQuestion()">Continuer →</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════ FINAL ══════════════════════════════════ -->
+<div class="screen hidden" id="final">
+  <h1>🎉 Tu as complété le safari !</h1>
+  <p>Merci d'être toi — curieuse, aventurière, passionnée.<br>
+     Voilà une petite surprise pour explorer encore plus loin 💛</p>
+  <div class="gift-card">
+    <div class="gc-logo">✦</div>
+    <div class="gc-title">Carte Cadeau</div>
+    <div class="gc-brand">Claude AI</div>
+    <div class="gc-amount">20 €</div>
+    <div class="gc-code-label">Code</div>
+    <!--
+      ╔══════════════════════════════════════════╗
+      ║  REMPLACE "XXXX-XXXX-XXXX-XXXX" PAR     ║
+      ║  LE VRAI CODE DE TA CARTE CADEAU CLAUDE  ║
+      ╚══════════════════════════════════════════╝
+    -->
+    <div class="gc-code">XXXX-XXXX-XXXX-XXXX</div>
+    <div class="gc-from">Avec tout mon amour 🦏</div>
+  </div>
+</div>
+
+<script>
+  // ═══════════════════════════════════════════════════════════════
+  // QUESTIONS — modifie librement !
+  // correct: index de la bonne réponse (0 = première option)
+  // ═══════════════════════════════════════════════════════════════
+  const questions = [
+    {
+      stop: "🌴 Bangkok, Thaïlande",
+      question: "Dans quel pays avons-nous fait notre première plongée ensemble ?",
+      // ↓ REMPLACE LES OPTIONS ET L'INDEX correct (0 = première option)
+      options: ["🇹🇭 Thaïlande", "🇻🇳 Vietnam", "🇲🇾 Malaisie", "🇮🇩 Indonésie"],
+      correct: 0, // ← CHANGE ICI
+      feedback: "Exactement ! On s'en souviendra toute notre vie 🤿"
+    },
+    {
+      stop: "🌊 Hanoï, Vietnam",
+      question: "Combien de cornes a le rhinocéros de Sumatra ?",
+      options: ["1 corne", "2 cornes", "3 cornes", "Aucune"],
+      correct: 1,
+      feedback: "Bravo ! Le rhino de Sumatra est le seul rhino d'Asie avec 2 cornes. Une particularité rare et magnifique 🦏"
+    },
+    {
+      stop: "🏛️ Siem Reap, Cambodge",
+      question: "Combien reste-t-il environ de rhinocéros de Sumatra à l'état sauvage aujourd'hui ?",
+      options: ["Moins de 80", "Entre 200 et 500", "Environ 1 000", "Plus de 5 000"],
+      correct: 0,
+      feedback: "Hélas oui... moins de 80 individus. C'est pourquoi chaque rhino compte ❤️"
+    },
+    {
+      stop: "🦁 Kuala Lumpur, Malaisie",
+      question: "Quel animal est le cousin évolutif le plus proche du rhinocéros ?",
+      options: ["L'éléphant", "L'hippopotame", "Le tapir", "Le zèbre"],
+      correct: 2,
+      feedback: "Le tapir ! Tous deux appartiennent aux Périssodactyles — les ongulés à nombre impair de doigts 🧬"
+    },
+    {
+      stop: "🦏 Bornéo, Indonésie",
+      question: "Quel est le record mondial de profondeur en plongée en apnée (sans assistance) ?",
+      options: ["124 m", "172 m", "214 m", "253 m"],
+      correct: 2,
+      feedback: "214 m par Herbert Nitsch en 2007. Impressionnant, non ? 🌊"
+    },
+    {
+      stop: "🎁 Destination surprise !",
+      question: "En quelle année nous sommes-nous rencontrés ?",
+      // ↓ REMPLACE LES OPTIONS ET L'INDEX correct
+      options: ["2021", "2022", "2023", "2024"],
+      correct: 1, // ← CHANGE ICI
+      feedback: "Et depuis, chaque jour est une nouvelle aventure 💛"
+    }
+  ];
+
+  // Positions Y du Land Cruiser pour chaque étape (correspond aux stops dans le SVG)
+  const cruiserPositions = [
+    { x: 46, y: 40 },   // Stop 0: Bangkok
+    { x: 46, y: 105 },  // Stop 1: Hanoï
+    { x: 46, y: 170 },  // Stop 2: Siem Reap
+    { x: 46, y: 235 },  // Stop 3: Kuala Lumpur
+    { x: 46, y: 300 },  // Stop 4: Bornéo
+    { x: 46, y: 335 },  // Stop 5: Final
+  ];
+
+  let currentQ = 0;
+  let answered = false;
+
+  function startGame() {
+    show('game');
+    loadQuestion(0);
+  }
+
+  function loadQuestion(idx) {
+    answered = false;
+    const q = questions[idx];
+    const total = questions.length;
+
+    // Progress bar
+    document.getElementById('progress-fill').style.width = (idx / total * 100) + '%';
+
+    // Labels
+    document.getElementById('stop-label').textContent = q.stop;
+    document.getElementById('question-text').textContent = q.question;
+
+    // Options
+    const optDiv = document.getElementById('options');
+    optDiv.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.textContent = opt;
+      btn.onclick = () => answer(i);
+      optDiv.appendChild(btn);
+    });
+
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('next-btn').style.display = 'none';
+  }
+
+  function answer(chosen) {
+    if (answered) return;
+    answered = true;
+
+    const q = questions[currentQ];
+    const btns = document.querySelectorAll('.opt-btn');
+    btns.forEach(b => b.disabled = true);
+
+    if (chosen === q.correct) {
+      btns[chosen].classList.add('correct');
+      document.getElementById('feedback').textContent = '✓ ' + q.feedback;
+      advanceCruiser(currentQ + 1);
+      markStopVisited(currentQ);
+    } else {
+      btns[chosen].classList.add('wrong');
+      btns[q.correct].classList.add('correct');
+      document.getElementById('feedback').textContent = '✗ Pas tout à fait... La bonne réponse était : ' + q.options[q.correct];
+    }
+
+    document.getElementById('next-btn').style.display = 'block';
+  }
+
+  function nextQuestion() {
+    currentQ++;
+    if (currentQ >= questions.length) {
+      endGame();
+    } else {
+      updateCurrentStop(currentQ);
+      loadQuestion(currentQ);
+    }
+  }
+
+  function markStopVisited(idx) {
+    const circle = document.getElementById('stop-' + idx);
+    if (circle) {
+      circle.classList.remove('current');
+      circle.classList.add('visited');
+      circle.setAttribute('fill', '#FF8F00');
+    }
+    const line = document.getElementById('line-' + idx + '-' + (idx + 1));
+    if (line) line.classList.add('done');
+  }
+
+  function updateCurrentStop(idx) {
+    const circle = document.getElementById('stop-' + idx);
+    if (circle) {
+      circle.setAttribute('fill', '#E65100');
+      circle.classList.add('current');
+    }
+  }
+
+  function advanceCruiser(toIdx) {
+    const pos = cruiserPositions[Math.min(toIdx, cruiserPositions.length - 1)];
+    const cruiser = document.getElementById('cruiser');
+    cruiser.setAttribute('x', pos.x);
+    cruiser.setAttribute('y', pos.y);
+  }
+
+  function endGame() {
+    // Final: progress to 100%
+    document.getElementById('progress-fill').style.width = '100%';
+    setTimeout(() => {
+      show('final');
+      launchConfetti();
+      // Gift emoji reveal
+      document.getElementById('stop-final').style.opacity = '1';
+    }, 400);
+  }
+
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+  }
+
+  function launchConfetti() {
+    const colors = ['#FF8F00','#E65100','#2E7D32','#1565C0','#F5E6C8','#FFF9C4','#fff'];
+    for (let i = 0; i < 80; i++) {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'confetti';
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.top = '-20px';
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        el.style.width  = (6 + Math.random() * 10) + 'px';
+        el.style.height = (6 + Math.random() * 10) + 'px';
+        el.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+        el.style.animationDuration = (2 + Math.random() * 3) + 's';
+        el.style.animationDelay = '0s';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 5000);
+      }, i * 60);
+    }
+  }
+</script>
+</body>
+</html>
