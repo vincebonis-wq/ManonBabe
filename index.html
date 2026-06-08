@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Joyeux Anniversaire Manon 🎉</title>
+  <title>Joyeux Anniversaire Mon Cœur 🎉</title>
   <style>
     :root {
       --accent: #FF8F00;
@@ -93,7 +93,7 @@
     /* The wide scrolling layer */
     #scene-inner {
       position: absolute; inset: 0;
-      width: 3800px; height: 100%;
+      width: 4200px; height: 100%;
       transition: transform 1.8s cubic-bezier(.25,.46,.45,.94);
     }
 
@@ -355,6 +355,60 @@
     .gc-link:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
     .gc-from { margin-top: 16px; font-size: .82em; opacity: .7; font-style: italic; }
 
+    /* ─── REPEAT CHALLENGE ─── */
+    #repeat-area { display: none; flex-direction: column; gap: 12px; }
+    #repeat-phrase {
+      background: #1E0E00; border: 2px solid #3A2000; border-radius: 10px;
+      padding: 13px 15px; font-size: 1em; color: var(--accent);
+      text-align: center; font-style: italic; line-height: 1.7;
+    }
+    #repeat-instr { font-size: .83em; color: #A07840; font-style: italic; }
+    #repeat-timer {
+      font-size: 3em; font-weight: bold; color: var(--deep);
+      font-family: 'Courier New', monospace; letter-spacing: 3px; text-align: center;
+      text-shadow: 0 2px 16px rgba(230,81,0,.3);
+    }
+    #repeat-timer.running { animation: tPulse .7s ease-in-out infinite; }
+    #repeat-start-btn {
+      align-self: center; padding: 11px 28px;
+      background: var(--accent); color: #0D0400;
+      border: none; border-radius: 30px; font-size: 1em; font-weight: bold; cursor: pointer;
+      transition: transform .15s;
+    }
+    #repeat-start-btn:hover { transform: translateY(-2px); }
+    #repeat-judge { display: none; gap: 12px; justify-content: center; }
+    #repeat-judge button {
+      padding: 11px 20px; border: 2px solid; border-radius: 30px;
+      font-size: .9em; font-weight: bold; cursor: pointer; transition: transform .15s;
+    }
+    #repeat-judge button:hover { transform: translateY(-2px); }
+    .judge-yes { background: #2E7D32; color: #fff; border-color: #2E7D32 !important; }
+    .judge-no  { background: transparent; color: var(--red); border-color: var(--red) !important; }
+    #repeat-result { display: none; flex-direction: column; gap: 6px; text-align: center; }
+    #repeat-result .rr-emoji { font-size: 2.4em; }
+    #repeat-result .rr-msg   { font-size: 1em; font-weight: bold; color: var(--accent); }
+    #repeat-result .rr-sub   { font-size: .83em; color: #A07840; font-style: italic; }
+
+    /* ─── SELFIE ─── */
+    #selfie-area { display: none; flex-direction: column; gap: 10px; align-items: center; }
+    #selfie-instr { font-size: .83em; color: #A07840; font-style: italic; text-align: center; }
+    #selfie-video {
+      width: 100%; max-width: 260px; border-radius: 12px;
+      border: 2px solid #3A2000; object-fit: cover; display: none;
+    }
+    #selfie-photo {
+      width: 100%; max-width: 260px; border-radius: 12px;
+      border: 3px solid var(--accent); object-fit: cover;
+      display: none; animation: fadeUp .4s ease;
+    }
+    #selfie-controls { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .selfie-btn {
+      padding: 10px 26px; background: var(--accent); color: #0D0400;
+      border: none; border-radius: 30px; font-size: .95em;
+      font-weight: bold; cursor: pointer; transition: transform .15s;
+    }
+    .selfie-btn:hover { transform: translateY(-2px); }
+
     /* ══ SHARED FX ══ */
     .spark { position: fixed; border-radius: 2px; pointer-events: none; animation: sparkFly linear forwards; }
     @keyframes sparkFly { 0%{opacity:1} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(720deg) scale(.2)} }
@@ -376,7 +430,7 @@
   <div class="intro-wrap">
     <div class="rh">🦏</div>
     <div class="rh-shadow"></div>
-    <h1>Joyeux Anniversaire<br>Manon&nbsp;! 🎂</h1>
+    <h1>Joyeux Anniversaire<br>Mon Cœur&nbsp;! 🎂</h1>
     <p>Un safari pour toi...<br>Réponds aux questions pour débloquer ta surprise 🎁</p>
     <button class="btn" onclick="startGame()">Démarrer l'aventure 🚙</button>
   </div>
@@ -493,6 +547,36 @@
         </div>
       </div>
 
+      <!-- Repeat challenge -->
+      <div id="repeat-area">
+        <div id="repeat-phrase"></div>
+        <div id="repeat-instr"></div>
+        <div id="repeat-timer">00.0</div>
+        <button id="repeat-start-btn" onclick="startRepeat()">C'est parti ! ⏱</button>
+        <div id="repeat-judge">
+          <button class="judge-yes" onclick="judgeRepeat(true)">LE JUGE VALIDE ✅</button>
+          <button class="judge-no"  onclick="judgeRepeat(false)">Raté 😈</button>
+        </div>
+        <div id="repeat-result">
+          <div class="rr-emoji"></div>
+          <div class="rr-msg"></div>
+          <div class="rr-sub"></div>
+        </div>
+      </div>
+
+      <!-- Selfie -->
+      <div id="selfie-area">
+        <div id="selfie-instr"></div>
+        <video id="selfie-video" autoplay playsinline muted></video>
+        <canvas id="selfie-canvas" style="display:none"></canvas>
+        <img id="selfie-photo" alt="Notre selfie 💛">
+        <div id="selfie-controls">
+          <button class="selfie-btn" id="selfie-cam-btn"  onclick="startCamera()">Activer la caméra 📷</button>
+          <button class="selfie-btn" id="selfie-snap-btn" onclick="snapPhoto()" style="display:none">Prendre la photo 📸</button>
+          <button class="selfie-btn" id="selfie-ok-btn"   onclick="selfieOk()"  style="display:none">C'est parfait ! 💛</button>
+        </div>
+      </div>
+
       <!-- Feedback -->
       <div id="feedback"></div>
 
@@ -584,18 +668,28 @@ const QUESTIONS = [
     ok:"214 m — Herbert Nitsch en 2007. Légendaire 🌊"
   },
   {
-    type:'tongue', stop:"🎤 Défi final !",
+    type:'tongue', stop:"🎤 Défi 1 — Tape !",
     phrase:"Les chaussettes de l'archiduchesse sont sèches et archi-sèches",
     instr:"Tape cette phrase le plus vite possible, sans erreur. Le chrono démarre à la première touche."
+  },
+  {
+    type:'repeat', stop:"🎙 Défi 2 — Dis-la !",
+    phrase:"Les chaussettes de l'archiduchesse sont sèches et archi-sèches",
+    instr:"Maintenant dis-la à voix haute — 10 fois de suite, le plus vite possible. Ton juge t'observe 👀"
+  },
+  {
+    type:'selfie', stop:"📸 Selfie safari !",
+    instr:"Pour débloquer ta surprise : prends un selfie avec ton chéri — et fais-lui un bisou sur la joue 😘"
   }
 ];
 
 // Checkpoint positions in the scene (px from left of scene-inner)
-const STOPS = [160, 560, 1000, 1450, 1900, 2350, 2750];
-const LABELS = ["Bangkok","Hanoï","Siem Reap","Kuala Lumpur","Bornéo","Défi !","🎁"];
+const STOPS = [160, 560, 1000, 1450, 1900, 2350, 2750, 3150, 3600];
+const LABELS = ["Bangkok","Hanoï","Siem Reap","Kuala Lumpur","Bornéo","Défi 1","Défi 2","Selfie","🎁"];
 
 // ─── STATE ───
 let qIdx = 0, answered = false, ttStart = null, ttTimer = null, ttDone = false;
+let repeatTimer = null, repeatStart = null;
 let carX = 40; // current car left position in scene-inner
 
 // ─── SCENE BUILD ───
@@ -619,6 +713,7 @@ function buildScene() {
     {x:900, scale:1.1,h:58},  {x:1150,scale:.75,h:40},  {x:1380,scale:.9, h:48},
     {x:1650,scale:1,  h:52},  {x:1920,scale:.8, h:44},  {x:2200,scale:1.2,h:62},
     {x:2450,scale:.85,h:46},  {x:2700,scale:1,  h:52},  {x:2980,scale:.9, h:48},
+    {x:3250,scale:1.1,h:56},  {x:3520,scale:.8, h:42},  {x:3800,scale:1,  h:50},
   ];
   trees.forEach(t => {
     const bottomPx = (100 - groundY) / 100 * H + 2;
@@ -633,7 +728,7 @@ function buildScene() {
   });
 
   // Small background trees (very small, desaturated, for depth)
-  [200,480,740,1100,1600,2050,2500,2900].forEach((x,i) => {
+  [200,480,740,1100,1600,2050,2500,2900,3300,3700].forEach((x,i) => {
     const s = .35 + (i%3)*.05;
     const bottomPx = (100 - groundY) / 100 * H + 2;
     html += `<div class="tree" style="left:${x+25}px; bottom:${bottomPx+8}px; opacity:.5; filter:saturate(.4);">
@@ -643,7 +738,7 @@ function buildScene() {
   });
 
   // Rhino silhouettes in distance
-  const rhinoDist = [420, 1280, 2160];
+  const rhinoDist = [420, 1280, 2160, 3100];
   rhinoDist.forEach(x => {
     html += `<div class="rhino-dist" style="left:${x}px; bottom:calc(${100-groundY}% + 4px);">🦏</div>`;
   });
@@ -714,7 +809,7 @@ function panScene(carPos) {
   const wW = wrap.offsetWidth;
   let tx = wW * 0.28 - carPos;
   tx = Math.min(0, tx);
-  tx = Math.max(-(3800 - wW), tx);
+  tx = Math.max(-(4200 - wW), tx);
   document.getElementById('scene-inner').style.transform = `translateX(${tx}px)`;
   // Keep car at its correct viewport position (scene coord + pan offset)
   document.getElementById('car-wrap').style.left = (carPos + tx) + 'px';
@@ -768,11 +863,18 @@ function loadQ(idx) {
 
   const qt = document.getElementById('q-text');
   qt.style.opacity = '0';
-  qt.textContent = q.type === 'quiz' ? q.q : 'Épreuve de vitesse 🏁';
+  const titles = { tongue:'Épreuve de vitesse 🏁', repeat:'Défi vocal 🎙', selfie:'Selfie safari 📸' };
+  qt.textContent = q.type === 'quiz' ? q.q : (titles[q.type] || '');
   setTimeout(() => { qt.style.transition = 'opacity .4s'; qt.style.opacity = '1'; }, 50);
 
   document.getElementById('feedback').textContent = '';
   document.getElementById('next-wrap').style.display = 'none';
+
+  // Hide all panels
+  ['opts','tt-area','repeat-area','selfie-area'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
 
   // Mark flag as reached
   const flag = document.getElementById('flag-' + idx);
@@ -780,11 +882,13 @@ function loadQ(idx) {
 
   if (q.type === 'quiz') {
     document.getElementById('opts').style.display = 'flex';
-    document.getElementById('tt-area').style.display = 'none';
     buildOpts(q);
-  } else {
-    document.getElementById('opts').style.display = 'none';
+  } else if (q.type === 'tongue') {
     buildTT(q);
+  } else if (q.type === 'repeat') {
+    buildRepeat(q);
+  } else if (q.type === 'selfie') {
+    buildSelfie(q);
   }
 }
 
@@ -886,6 +990,98 @@ function finishTT() {
   document.getElementById('tt-stars').textContent = stars;
   document.getElementById('tt-score').textContent = score + ' — ' + secs.toFixed(1) + 's';
   document.getElementById('tt-msg').textContent = msg;
+  document.getElementById('next-wrap').style.display = 'block';
+}
+
+// ─── REPEAT CHALLENGE ───
+function buildRepeat(q) {
+  document.getElementById('repeat-area').style.display = 'flex';
+  document.getElementById('repeat-phrase').textContent = q.phrase;
+  document.getElementById('repeat-instr').textContent = q.instr;
+  document.getElementById('repeat-timer').textContent = '00.0';
+  document.getElementById('repeat-timer').classList.remove('running');
+  document.getElementById('repeat-start-btn').style.display = 'block';
+  document.getElementById('repeat-judge').style.display = 'none';
+  document.getElementById('repeat-result').style.display = 'none';
+  repeatStart = null;
+}
+
+function startRepeat() {
+  repeatStart = Date.now();
+  document.getElementById('repeat-start-btn').style.display = 'none';
+  document.getElementById('repeat-timer').classList.add('running');
+  repeatTimer = setInterval(() => {
+    const s = (Date.now() - repeatStart) / 1000;
+    document.getElementById('repeat-timer').textContent = s.toFixed(1).padStart(4,'0');
+  }, 100);
+  document.getElementById('repeat-judge').style.display = 'flex';
+}
+
+function judgeRepeat(pass) {
+  clearInterval(repeatTimer);
+  const secs = ((Date.now() - repeatStart) / 1000).toFixed(1);
+  document.getElementById('repeat-timer').classList.remove('running');
+  document.getElementById('repeat-timer').textContent = secs + 's';
+  document.getElementById('repeat-judge').style.display = 'none';
+  const res = document.getElementById('repeat-result');
+  res.style.display = 'flex';
+  if (pass) {
+    res.querySelector('.rr-emoji').textContent = '🏆';
+    res.querySelector('.rr-msg').textContent = 'Le juge valide — impeccable !';
+    res.querySelector('.rr-sub').textContent = secs + 's — Reine du safari vocal 🎙';
+  } else {
+    res.querySelector('.rr-emoji').textContent = '😂';
+    res.querySelector('.rr-msg').textContent = 'Raté... mais le juge est indulgent ce soir.';
+    res.querySelector('.rr-sub').textContent = 'Tu passes quand même — pour l\'amour 💛';
+  }
+  document.getElementById('next-wrap').style.display = 'block';
+}
+
+// ─── SELFIE ───
+function buildSelfie(q) {
+  document.getElementById('selfie-area').style.display = 'flex';
+  document.getElementById('selfie-instr').textContent = q.instr;
+  const v = document.getElementById('selfie-video');
+  if (v.srcObject) { v.srcObject.getTracks().forEach(t => t.stop()); v.srcObject = null; }
+  v.style.display = 'none';
+  document.getElementById('selfie-photo').style.display = 'none';
+  document.getElementById('selfie-cam-btn').style.display = 'block';
+  document.getElementById('selfie-snap-btn').style.display = 'none';
+  document.getElementById('selfie-ok-btn').style.display = 'none';
+}
+
+function startCamera() {
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+    .then(stream => {
+      const v = document.getElementById('selfie-video');
+      v.srcObject = stream;
+      v.style.display = 'block';
+      document.getElementById('selfie-cam-btn').style.display = 'none';
+      document.getElementById('selfie-snap-btn').style.display = 'block';
+    })
+    .catch(() => {
+      document.getElementById('selfie-instr').textContent =
+        '📷 Autorise la caméra dans ton navigateur, puis réessaie.';
+    });
+}
+
+function snapPhoto() {
+  const v = document.getElementById('selfie-video');
+  const c = document.getElementById('selfie-canvas');
+  c.width = v.videoWidth; c.height = v.videoHeight;
+  const ctx = c.getContext('2d');
+  ctx.translate(c.width, 0); ctx.scale(-1, 1); // mirror pour selfie
+  ctx.drawImage(v, 0, 0);
+  const img = document.getElementById('selfie-photo');
+  img.src = c.toDataURL('image/jpeg', 0.85);
+  img.style.display = 'block';
+  v.srcObject.getTracks().forEach(t => t.stop());
+  v.srcObject = null; v.style.display = 'none';
+  document.getElementById('selfie-snap-btn').style.display = 'none';
+  document.getElementById('selfie-ok-btn').style.display = 'block';
+}
+
+function selfieOk() {
   document.getElementById('next-wrap').style.display = 'block';
 }
 
