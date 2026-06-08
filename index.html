@@ -638,64 +638,173 @@
     <div class="map-sub">4 mois · 6 escales · un monde à explorer</div>
     <div class="map-svg-wrap">
       <svg id="travel-map" viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="340" fill="#0D2A4A"/>
-        <!-- ── Terres simplifiées ── -->
-        <!-- Chine / côte Shanghai -->
-        <path d="M 148,0 Q 185,0 220,8 Q 238,18 242,36 Q 228,50 212,44 Q 194,36 172,24 Q 154,14 148,4 Z" fill="#2A5A1A" opacity=".75"/>
+        <!-- Océan -->
+        <rect width="300" height="340" fill="#0C2540"/>
+        <!-- Lignes de latitude subtiles -->
+        <line x1="0" y1="177" x2="300" y2="177" stroke="#0E2B4E" stroke-width=".7" stroke-dasharray="4 6"/>
+        <line x1="0" y1="251" x2="300" y2="251" stroke="#0E2B4E" stroke-width=".7" stroke-dasharray="4 6"/>
+
+        <!-- ═══ CONTINENT : Chine + Indochine (masse unique) ═══ -->
+        <!-- Côte E. de la Chine : bouge de 34°N vers le sud ; Indochine + péninsule malaise -->
+        <path d="
+          M 0,0 L 192,0
+          Q 200,4 208,12 Q 215,18 217,26 Q 215,34 209,44
+          Q 202,54 193,62 Q 181,70 167,76
+          Q 149,82 128,84 Q 104,84 82,82
+          Q 62,79 50,86 Q 41,94 38,107
+          Q 35,120 36,133 Q 38,145 40,156
+          Q 42,166 42,176 Q 39,184 31,188
+          Q 22,193 17,204 Q 13,216 15,230
+          Q 17,245 17,260 Q 16,276 13,292
+          Q 11,308 9,324 L 0,340 Z
+        " fill="#2D651A" opacity=".8"/>
+
         <!-- Taiwan -->
-        <ellipse cx="210" cy="80" rx="7" ry="14" fill="#2A5A1A" opacity=".6"/>
-        <!-- Indochine (Vietnam + péninsule) -->
-        <path d="M 0,55 Q 38,44 60,68 Q 70,96 68,132 Q 65,164 58,188 Q 48,212 40,232 L 32,255 Q 26,272 22,288 L 0,288 Z" fill="#2A5A1A" opacity=".75"/>
-        <path d="M 60,68 Q 84,74 88,105 Q 90,136 84,162 Q 78,185 68,190" fill="none" stroke="#2A5A1A" stroke-width="13" stroke-linecap="round" opacity=".75"/>
-        <!-- Péninsule malaise -->
-        <path d="M 38,232 Q 44,250 40,268 Q 36,284 30,300 Q 26,316 22,332 L 14,340 L 6,340 Q 10,322 14,305 Q 18,286 22,268 Q 26,250 28,234 Z" fill="#2A5A1A" opacity=".65"/>
-        <!-- Sumatra (partielle) -->
-        <path d="M 0,254 Q 20,245 46,250 Q 68,258 74,272 Q 70,283 52,285 Q 28,287 6,281 Q 0,274 0,262 Z" fill="#2A5A1A" opacity=".65"/>
-        <!-- Bornéo -->
-        <path d="M 88,182 Q 116,173 145,177 Q 172,183 186,202 Q 194,222 187,246 Q 177,265 154,271 Q 128,275 104,266 Q 82,252 79,227 Q 76,205 83,192 Z" fill="#2A5A1A" opacity=".75"/>
-        <!-- Sulawesi -->
-        <path d="M 192,238 Q 208,230 220,243 Q 225,258 215,268 Q 204,273 193,265 Q 185,254 188,242 Z" fill="#2A5A1A" opacity=".65"/>
-        <path d="M 216,243 Q 230,234 242,245 Q 246,256 235,262 Q 225,264 216,256 Z" fill="#2A5A1A" opacity=".6"/>
-        <!-- Philippines — Luzon -->
-        <path d="M 204,110 Q 218,102 228,115 Q 234,134 225,151 Q 215,161 203,154 Q 193,143 195,126 Q 196,114 204,110 Z" fill="#2A5A1A" opacity=".75"/>
-        <!-- Philippines — Visayas (Cebu/Leyte) -->
-        <path d="M 217,164 Q 233,158 246,168 Q 252,182 243,192 Q 231,197 217,191 Q 207,181 211,168 Z" fill="#2A5A1A" opacity=".7"/>
-        <!-- Philippines — Mindanao -->
-        <path d="M 213,198 Q 237,192 256,207 Q 263,226 253,240 Q 237,250 216,244 Q 200,232 202,212 Z" fill="#2A5A1A" opacity=".7"/>
-        <!-- Java -->
-        <path d="M 42,302 Q 80,294 122,298 Q 148,302 154,311 Q 148,321 118,323 Q 80,325 47,318 Q 35,312 42,302 Z" fill="#2A5A1A" opacity=".75"/>
-        <!-- Bali + petites îles -->
-        <path d="M 156,311 Q 174,308 194,311 Q 202,318 196,326 Q 176,330 157,323 Q 149,316 156,311 Z" fill="#2A5A1A" opacity=".7"/>
-        <!-- Flores (Labuan Bajo) -->
-        <path d="M 197,311 Q 214,307 230,311 Q 237,319 229,326 Q 213,330 197,323 Q 189,316 197,311 Z" fill="#2A5A1A" opacity=".65"/>
+        <ellipse cx="218" cy="80" rx="6" ry="13" transform="rotate(-18,218,80)" fill="#2D651A" opacity=".7"/>
 
-        <!-- ── Route animée ── -->
+        <!-- Péninsule malaise (bord est, plus fine) -->
+        <path d="
+          M 17,204 Q 26,202 32,210 Q 36,220 35,235
+          Q 34,251 30,267 Q 27,283 24,299
+          Q 21,315 18,331 L 11,340 L 21,340
+          Q 25,325 28,308 Q 31,291 34,273
+          Q 36,255 36,238 Q 36,222 32,212
+          Q 27,205 20,204 Z
+        " fill="#2D651A" opacity=".72"/>
+
+        <!-- Sumatra (partielle, est) -->
+        <path d="
+          M 14,264 Q 30,256 52,259 Q 68,264 78,276
+          Q 81,286 71,292 Q 54,297 36,293
+          Q 19,288 12,278 Z
+        " fill="#2D651A" opacity=".76"/>
+
+        <!-- ═══ BORNÉO — contour fidèle ═══ -->
+        <!-- N→E→SE→S→SW→W→NW→N -->
+        <path d="
+          M 168,197
+          Q 176,198 183,206 Q 187,215 186,227
+          Q 184,238 180,249 Q 175,260 169,269
+          Q 162,277 152,281 Q 141,283 130,281
+          Q 118,278 108,271 Q 99,262 92,250
+          Q 87,238 88,226 Q 90,215 98,208
+          Q 108,201 122,197 Q 138,193 154,194
+          Q 162,194 168,197 Z
+        " fill="#2D651A" opacity=".8"/>
+
+        <!-- ═══ SULAWESI — forme en K distincte ═══ -->
+        <!-- Lobe principal + péninsule sud -->
+        <path d="
+          M 196,244 Q 210,237 225,241 Q 235,247 237,259
+          Q 235,270 227,278 Q 220,286 219,295
+          Q 216,303 210,305 Q 203,301 202,291
+          Q 200,280 205,271 Q 209,261 204,251
+          Q 200,246 196,244 Z
+        " fill="#2D651A" opacity=".74"/>
+        <!-- Bras NE (Manado) -->
+        <path d="M 225,241 Q 237,233 249,240 Q 256,248 251,258 Q 241,262 231,255 Q 224,248 225,241 Z"
+              fill="#2D651A" opacity=".74"/>
+        <!-- Bras E (Kendari) -->
+        <path d="M 227,278 Q 239,273 248,283 Q 250,292 241,297 Q 231,297 227,287 Z"
+              fill="#2D651A" opacity=".70"/>
+        <!-- Bras SE -->
+        <path d="M 219,295 Q 226,298 233,307 Q 231,313 222,312 Q 216,305 219,295 Z"
+              fill="#2D651A" opacity=".66"/>
+
+        <!-- ═══ PHILIPPINES ═══ -->
+        <!-- Luzon (grande île nord) -->
+        <path d="
+          M 207,112 Q 215,105 224,108 Q 231,115 233,125
+          Q 234,134 231,143 Q 228,151 233,157
+          Q 237,163 231,167 Q 223,168 218,161
+          Q 213,154 211,143 Q 209,132 208,122 Z
+        " fill="#2D651A" opacity=".8"/>
+        <!-- Luzon — pointe nord -->
+        <path d="M 224,108 Q 230,102 233,108 Q 234,116 229,120 Q 225,118 224,108 Z"
+              fill="#2D651A" opacity=".7"/>
+        <!-- Mindoro -->
+        <path d="M 204,149 Q 200,157 200,168 Q 203,172 208,167 Q 210,158 207,149 Z"
+              fill="#2D651A" opacity=".65"/>
+        <!-- Palawan (fine diagonale SW) -->
+        <path d="M 198,154 Q 193,163 190,174 Q 193,178 197,173 Q 200,163 202,154 Z"
+              fill="#2D651A" opacity=".62"/>
+        <!-- Samar + Leyte — Pintuyan est en S.Leyte (x=252, y=176) -->
+        <path d="
+          M 240,153 Q 255,148 263,159 Q 268,170 263,181
+          Q 256,188 244,186 Q 236,183 234,173
+          Q 232,162 240,153 Z
+        " fill="#2D651A" opacity=".8"/>
+        <!-- Cebu — Malapascua au nord (x=241, y=168) -->
+        <path d="M 233,163 Q 240,158 245,167 Q 246,178 239,183 Q 232,182 230,173 Z"
+              fill="#2D651A" opacity=".76"/>
+        <!-- Negros -->
+        <path d="M 224,168 Q 231,164 234,175 Q 232,185 225,184 Q 218,178 222,169 Z"
+              fill="#2D651A" opacity=".72"/>
+        <!-- Bohol -->
+        <path d="M 239,184 Q 248,182 251,190 Q 248,196 241,194 Z"
+              fill="#2D651A" opacity=".68"/>
+        <!-- Mindanao (grande île sud) -->
+        <path d="
+          M 215,192 Q 234,185 255,193 Q 265,204 265,221
+          Q 263,237 251,246 Q 235,252 216,247
+          Q 201,239 201,222 Q 201,205 215,192 Z
+        " fill="#2D651A" opacity=".8"/>
+
+        <!-- ═══ JAVA — fine bande E-O ═══ -->
+        <path d="
+          M 42,300 Q 72,292 106,294 Q 131,296 151,304
+          Q 156,311 150,319 Q 135,323 104,324
+          Q 74,324 51,315 Q 39,308 42,300 Z
+        " fill="#2D651A" opacity=".8"/>
+
+        <!-- BALI (petit ovale — Seseh & Ubud ici) -->
+        <ellipse cx="155" cy="312" rx="6" ry="5" fill="#2D651A" opacity=".8"/>
+
+        <!-- LOMBOK -->
+        <ellipse cx="165" cy="312" rx="4" ry="4" fill="#2D651A" opacity=".74"/>
+
+        <!-- SUMBAWA -->
+        <path d="M 170,308 Q 181,305 191,308 Q 195,315 189,321 Q 178,323 170,316 Z"
+              fill="#2D651A" opacity=".72"/>
+
+        <!-- FLORES — allongée, Labuan Bajo à l'ouest (x=199) -->
+        <path d="
+          M 193,308 Q 208,303 223,307 Q 230,313 226,321
+          Q 212,326 195,319 Q 187,313 193,308 Z
+        " fill="#2D651A" opacity=".74"/>
+
+        <!-- TIMOR -->
+        <path d="M 228,313 Q 242,308 253,315 Q 256,323 246,328 Q 233,329 227,320 Z"
+              fill="#2D651A" opacity=".68"/>
+
+        <!-- ═══ ROUTE ANIMÉE ═══ -->
         <path id="route-path"
-          d="M 215,21 L 148,314 L 252,176 L 241,168 L 153,314 L 199,314"
-          fill="none" stroke="#FF8F00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-          stroke-dasharray="750" stroke-dashoffset="750" opacity=".9"/>
+          d="M 215,21 L 151,314 L 252,176 L 241,168 L 153,314 L 199,314"
+          fill="none" stroke="#FF8F00" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round"
+          stroke-dasharray="750" stroke-dashoffset="750" opacity=".92"/>
 
-        <!-- ── Villes ── -->
+        <!-- ═══ VILLES ═══ -->
         <g class="map-city" id="mc-0">
           <circle cx="215" cy="21" r="5" fill="#FF8F00"/>
-          <circle cx="215" cy="21" r="9" fill="none" stroke="#FF8F00" stroke-width="1.5" opacity=".5" class="ping"/>
+          <circle cx="215" cy="21" r="9" fill="none" stroke="#FF8F00" stroke-width="1.5" opacity=".4" class="ping"/>
           <text x="220" y="17" fill="#F5E6C8" font-size="9.5" font-family="Georgia,serif">Shanghai</text>
         </g>
         <g class="map-city" id="mc-1">
-          <circle cx="148" cy="314" r="4.5" fill="#FF8F00"/>
-          <text x="106" y="312" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Seseh</text>
+          <circle cx="151" cy="314" r="4.5" fill="#FF8F00"/>
+          <text x="108" y="312" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Seseh</text>
         </g>
         <g class="map-city" id="mc-2">
           <circle cx="252" cy="176" r="4.5" fill="#FF8F00"/>
-          <text x="256" y="180" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Pintuyan</text>
+          <text x="257" y="180" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Pintuyan</text>
         </g>
         <g class="map-city" id="mc-3">
           <circle cx="241" cy="168" r="4.5" fill="#FF8F00"/>
-          <text x="208" y="163" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Malapascua</text>
+          <text x="216" y="162" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Malapascua</text>
         </g>
         <g class="map-city" id="mc-4">
-          <circle cx="158" cy="314" r="4.5" fill="#FF8F00"/>
-          <text x="156" y="330" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Ubud</text>
+          <circle cx="153" cy="314" r="4.5" fill="#FF8F00"/>
+          <text x="151" y="331" fill="#F5E6C8" font-size="8.5" font-family="Georgia,serif">Ubud</text>
         </g>
         <g class="map-city" id="mc-5">
           <circle cx="199" cy="314" r="4.5" fill="#FF8F00"/>
@@ -749,42 +858,42 @@
 // ═══════════════════════════════════════════
 const QUESTIONS = [
   {
-    type:'quiz', stop:"🌴 Bangkok, Thaïlande",
+    type:'quiz', stop:"🏙 Shanghai, Chine",
     q:"Dans quel pays avons-nous fait notre première plongée ensemble ?",
     opts:["🇵🇭 Philippines","🇹🇭 Thaïlande","🇲🇾 Malaisie","🇮🇩 Indonésie"],
     correct:0,
     ok:"Exactement ! Les Philippines — un baptême sous-marin inoubliable 🤿"
   },
   {
-    type:'quiz', stop:"🌊 Hanoï, Vietnam",
+    type:'quiz', stop:"🌊 Seseh, Bali",
     q:"Combien de cornes a le rhinocéros de Sumatra ?",
     opts:["1 corne","2 cornes","3 cornes","Aucune"],
     correct:1,
     ok:"Bravo ! Le seul rhino d'Asie avec 2 cornes. Rare et magnifique 🦏"
   },
   {
-    type:'quiz', stop:"🏛 Siem Reap, Cambodge",
+    type:'quiz', stop:"🤿 Pintuyan, Philippines",
     q:"Combien reste-t-il environ de rhinocéros de Sumatra à l'état sauvage ?",
     opts:["Moins de 80","Entre 200 et 500","Environ 1 000","Plus de 5 000"],
     correct:0,
     ok:"Hélas oui... moins de 80 individus. C'est pourquoi ils comptent tant ❤️"
   },
   {
-    type:'quiz', stop:"🦁 Kuala Lumpur, Malaisie",
+    type:'quiz', stop:"🐠 Malapascua, Philippines",
     q:"Quel animal est le cousin évolutif le plus proche du rhinocéros ?",
     opts:["L'éléphant","L'hippopotame","Le tapir","Le zèbre"],
     correct:2,
     ok:"Le tapir ! Même ordre : les Périssodactyles — ongulés à doigts impairs 🧬"
   },
   {
-    type:'quiz', stop:"🦏 Bornéo, Indonésie",
+    type:'quiz', stop:"🌿 Ubud, Bali",
     q:"Quel est le record mondial de profondeur en apnée sans assistance ?",
     opts:["124 m","172 m","214 m","253 m"],
     correct:2,
     ok:"214 m — Herbert Nitsch en 2007. Légendaire 🌊"
   },
   {
-    type:'tongue', stop:"🎤 Défi 1 — Tape !",
+    type:'tongue', stop:"🎤 Labuan Bajo, Flores",
     phrase:"Les chaussettes de l'archiduchesse sont sèches et archi-sèches",
     instr:"Tape cette phrase le plus vite possible, sans erreur. Le chrono démarre à la première touche."
   },
@@ -801,7 +910,7 @@ const QUESTIONS = [
 
 // Checkpoint positions in the scene (px from left of scene-inner)
 const STOPS = [160, 560, 1000, 1450, 1900, 2350, 2750, 3150, 3600];
-const LABELS = ["Bangkok","Hanoï","Siem Reap","Kuala Lumpur","Bornéo","Défi 1","Défi 2","Selfie","🎁"];
+const LABELS = ["Shanghai","Seseh","Pintuyan","Malapascua","Ubud","Labuan Bajo","Défi","Selfie","🎁"];
 
 // ─── STATE ───
 let qIdx = 0, answered = false, ttStart = null, ttTimer = null, ttDone = false;
