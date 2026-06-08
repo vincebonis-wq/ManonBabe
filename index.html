@@ -344,12 +344,15 @@
     .gc-plan  { font-size: 1em; opacity: .88; font-style: italic; margin-bottom: 18px; }
     .gc-div   { height: 1px; background: rgba(255,255,255,.2); margin-bottom: 18px; }
     .gc-clbl  { font-size: .72em; opacity: .65; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
-    .gc-code  {
-      font-family: 'Courier New', monospace; font-size: 1.25em; letter-spacing: 4px;
-      background: rgba(0,0,0,.3); padding: 11px 16px; border-radius: 10px;
-      word-break: break-all; cursor: pointer; transition: background .2s; user-select: all;
+    .gc-link  {
+      display: inline-block; margin-top: 4px;
+      background: #fff; color: #a06020;
+      font-weight: 700; font-size: 1em; letter-spacing: .5px;
+      padding: 12px 28px; border-radius: 30px;
+      text-decoration: none; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+      transition: transform .15s, box-shadow .15s;
     }
-    .gc-code:hover { background: rgba(0,0,0,.45); }
+    .gc-link:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
     .gc-from { margin-top: 16px; font-size: .82em; opacity: .7; font-style: italic; }
 
     /* ══ SHARED FX ══ */
@@ -527,13 +530,15 @@
     <div class="gc-brand">Claude AI</div>
     <div class="gc-plan">1 mois d'abonnement Pro — offert</div>
     <div class="gc-div"></div>
-    <div class="gc-clbl">Code à utiliser sur claude.ai</div>
+    <div class="gc-clbl">Clique pour activer ton cadeau</div>
     <!--
-      ╔═════════════════════════════════════╗
-      ║  REMPLACE PAR LE VRAI CODE CADEAU  ║
-      ╚═════════════════════════════════════╝
+      ╔══════════════════════════════════════════╗
+      ║  REMPLACE LE LIEN href="..." CI-DESSOUS  ║
+      ╚══════════════════════════════════════════╝
     -->
-    <div class="gc-code" title="Clique pour copier" onclick="copyCode(this)">XXXX-XXXX-XXXX-XXXX</div>
+    <a class="gc-link" href="https://VOTRE-LIEN-ICI" target="_blank" rel="noopener">
+      🎁 Accéder à mon cadeau
+    </a>
     <div class="gc-from">Avec tout mon amour 🦏</div>
   </div>
 </div>
