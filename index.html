@@ -156,6 +156,14 @@
     }
     .flag.reached .flag-banner { background: var(--green); }
 
+    /* Flags overlay layer (above car) */
+    #flags-layer {
+      position: absolute; top: 0; left: 0;
+      width: 4200px; height: 100%;
+      pointer-events: none; z-index: 15;
+      transition: transform 1.8s cubic-bezier(.25,.46,.45,.94);
+    }
+
     /* Dust particles */
     .dust {
       position: absolute;
@@ -411,15 +419,15 @@
 
     /* ─── RHINO BUDDY ─── */
     #rhino-buddy {
-      position: absolute; bottom: 10px; right: 14px;
-      font-size: 28px; z-index: 20;
+      position: absolute; bottom: 6px; right: 10px;
+      font-size: 60px; z-index: 20;
       user-select: none; pointer-events: none;
       transition: transform .1s;
     }
-    .rhino-bounce { animation: rhinoBounce .55s ease !important; }
+    .rhino-bounce { animation: rhinoBounce .6s ease !important; }
     .rhino-shake  { animation: rhinoShake  .4s  ease !important; }
-    @keyframes rhinoBounce { 0%,100%{transform:translateY(0) rotate(0)} 35%{transform:translateY(-22px) rotate(-12deg)} 65%{transform:translateY(-10px) rotate(6deg)} }
-    @keyframes rhinoShake  { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+    @keyframes rhinoBounce { 0%,100%{transform:translateY(0) rotate(0)} 30%{transform:translateY(-32px) rotate(-16deg) scale(1.15)} 65%{transform:translateY(-14px) rotate(8deg) scale(1.05)} }
+    @keyframes rhinoShake  { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-10px)} 40%,80%{transform:translateX(10px)} }
     .rhino-heart { position:fixed; pointer-events:none; animation:heartFloat .9s ease forwards; }
     @keyframes heartFloat { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-52px) scale(.5)} }
 
@@ -495,6 +503,9 @@
     <div id="scene-inner">
       <!-- populated by JS -->
     </div>
+
+    <!-- Flags layer (above car) -->
+    <div id="flags-layer"></div>
 
     <!-- Land Cruiser (outside scene-inner, on top) -->
     <div id="car-wrap" style="bottom:22%">
@@ -975,18 +986,21 @@ function buildScene() {
     html += `<div class="bird" style="left:${bx}px;top:${by}%;">︷</div>`;
   }
 
-  // Checkpoint flags
+  inner.innerHTML = html;
+
+  // Checkpoint flags — in separate overlay layer so they appear above the car
+  const flagsLayer = document.getElementById('flags-layer');
+  let flagsHtml = '';
   STOPS.slice(0,-1).forEach((x, i) => {
     const label = LABELS[i];
     const bottomPx = (100-groundY)/100 * H + 2;
     const poleH = 38;
-    html += `<div class="flag" id="flag-${i}" style="left:${x+10}px; bottom:${bottomPx}px;">
+    flagsHtml += `<div class="flag" id="flag-${i}" style="left:${x+10}px; bottom:${bottomPx}px;">
       <div class="flag-banner">${label}</div>
       <div class="flag-pole" style="height:${poleH}px;"></div>
     </div>`;
   });
-
-  inner.innerHTML = html;
+  flagsLayer.innerHTML = flagsHtml;
 }
 
 // ─── START ───
@@ -1037,6 +1051,8 @@ function panScene(carPos) {
   tx = Math.min(0, tx);
   tx = Math.max(-(4200 - wW), tx);
   document.getElementById('scene-inner').style.transform = `translateX(${tx}px)`;
+  const fl = document.getElementById('flags-layer');
+  if (fl) fl.style.transform = `translateX(${tx}px)`;
   // Keep car at its correct viewport position (scene coord + pan offset)
   document.getElementById('car-wrap').style.left = (carPos + tx) + 'px';
 }
@@ -1143,6 +1159,7 @@ function pick(chosen, q, btn) {
     document.getElementById('feedback').textContent = '✓ ' + q.ok;
     burstAt(btn);
     rhinoReact(true);
+    playYeah();
   } else {
     btn.classList.add('wrong');
     allBtns[q.correct].classList.add('correct');
@@ -1437,6 +1454,37 @@ function rhinoReact(good) {
       }, i * 130);
     });
   }
+}
+
+// ─── YEAH ! ───
+function playYeah() {
+  try {
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance('Yeah !');
+      u.pitch = 1.7;
+      u.rate = 0.95;
+      u.volume = 1;
+      speechSynthesis.speak(u);
+    }
+    // Ascending ding (C5-E5-G5-C6)
+    if (audioCtx) {
+      [523, 659, 784, 1047].forEach((f, i) => {
+        setTimeout(() => {
+          const osc = audioCtx.createOscillator();
+          const g   = audioCtx.createGain();
+          const t   = audioCtx.currentTime;
+          osc.frequency.value = f;
+          osc.type = 'sine';
+          g.gain.setValueAtTime(0, t);
+          g.gain.linearRampToValueAtTime(0.22, t + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+          osc.connect(g); g.connect(audioCtx.destination);
+          osc.start(t); osc.stop(t + 0.32);
+        }, i * 85);
+      });
+    }
+  } catch(e) {}
 }
 
 // ─── SONS AMBIANTS ───
