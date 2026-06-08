@@ -1147,7 +1147,7 @@ function pick(chosen, q, btn) {
     document.getElementById('feedback').textContent = '✓ ' + q.ok;
     burstAt(btn);
     rhinoReact(true);
-    playYeah();
+    playVictory();
   } else {
     btn.classList.add('wrong');
     allBtns[q.correct].classList.add('correct');
@@ -1444,34 +1444,25 @@ function rhinoReact(good) {
   }
 }
 
-// ─── YEAH ! ───
-function playYeah() {
+// ─── VICTOIRE ───
+function playVictory() {
+  if (!audioCtx) return;
   try {
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance('Yeah !');
-      u.pitch = 1.7;
-      u.rate = 0.95;
-      u.volume = 1;
-      speechSynthesis.speak(u);
-    }
-    // Ascending ding (C5-E5-G5-C6)
-    if (audioCtx) {
-      [523, 659, 784, 1047].forEach((f, i) => {
-        setTimeout(() => {
-          const osc = audioCtx.createOscillator();
-          const g   = audioCtx.createGain();
-          const t   = audioCtx.currentTime;
-          osc.frequency.value = f;
-          osc.type = 'sine';
-          g.gain.setValueAtTime(0, t);
-          g.gain.linearRampToValueAtTime(0.22, t + 0.02);
-          g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
-          osc.connect(g); g.connect(audioCtx.destination);
-          osc.start(t); osc.stop(t + 0.32);
-        }, i * 85);
-      });
-    }
+    // Fanfare courte : Sol5-Si5-Ré6-Sol6 (arpège majeur montant)
+    [784, 988, 1175, 1568].forEach((freq, i) => {
+      setTimeout(() => {
+        const osc = audioCtx.createOscillator();
+        const g   = audioCtx.createGain();
+        const t   = audioCtx.currentTime;
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(i === 3 ? 0.32 : 0.2, t + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.001, t + (i === 3 ? 0.38 : 0.18));
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.start(t); osc.stop(t + 0.42);
+      }, i * 75);
+    });
   } catch(e) {}
 }
 
