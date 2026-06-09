@@ -475,6 +475,64 @@
     #memory-result .mr-msg   { font-size: 1em; font-weight: bold; color: var(--accent); }
     #memory-result .mr-sub   { font-size: .83em; color: #A07840; font-style: italic; }
 
+    /* ─── SHOOT ─── */
+    #shoot-area { display:none; flex-direction:column; gap:10px; align-items:center; width:100%; }
+    #shoot-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; width:100%; max-width:300px; }
+    .shoot-hole {
+      aspect-ratio:1; background:#1A0A00; border:2px solid #3A2000;
+      border-radius:12px; display:flex; align-items:center; justify-content:center;
+      font-size:clamp(22px,6vw,36px); cursor:pointer; user-select:none;
+      transition: background .15s, transform .1s;
+    }
+    .shoot-hole:active { transform:scale(.9); }
+    .shoot-hole.hit-good { background:#0A2010; border-color:var(--green); }
+    .shoot-hole.hit-bad  { background:#200A0A; border-color:var(--red); }
+    #shoot-hud { display:flex; justify-content:space-between; width:100%; max-width:300px; }
+
+    /* ─── COUNT ─── */
+    #count-area { display:none; flex-direction:column; gap:12px; align-items:center; width:100%; }
+    #count-flash { background:#1E0E00; border:2px solid #3A2000; border-radius:12px; padding:10px; width:100%; text-align:center; font-size:1.5em; line-height:1.9; letter-spacing:3px; min-height:60px; }
+    #count-opts-wrap { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+    .count-opt {
+      padding:10px 22px; background:#1E0E00; color:#D4B87A;
+      border:2px solid #3A2000; border-radius:10px; font-size:1em;
+      cursor:pointer; font-family:'Georgia',serif; transition:border-color .15s,background .15s;
+    }
+    .count-opt:hover { border-color:var(--accent); background:#2A1400; }
+    .count-opt.correct { background:#0A2010; border-color:var(--green); color:#90EE90; }
+    .count-opt.wrong   { background:#200A0A; border-color:var(--red);   color:#FFB3B3; }
+
+    /* ─── PIXEL ART ─── */
+    #pixel-area { display:none; flex-direction:column; gap:10px; align-items:center; width:100%; }
+    #pixel-ref, #pixel-draw { display:grid; gap:2px; grid-template-columns:repeat(8,1fr); }
+    .px-cell {
+      width:clamp(18px,5vw,30px); height:clamp(18px,5vw,30px);
+      border-radius:3px; box-sizing:border-box;
+    }
+    .px-ref-on  { background:#C8A040; }
+    .px-ref-off { background:#1A0A00; border:1px solid #2A1400; }
+    .px-draw-on  { background:#FF8F00; cursor:pointer; }
+    .px-draw-off { background:#1A0A00; border:1px solid #3A2000; cursor:pointer; }
+    .px-draw-off:hover { background:#2A1400; }
+
+    /* ─── SIMON ─── */
+    #simon-area { display:none; flex-direction:column; gap:12px; align-items:center; width:100%; }
+    #simon-pad { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:250px; }
+    .simon-btn {
+      aspect-ratio:1; border:none; border-radius:14px; font-size:clamp(24px,7vw,38px);
+      cursor:pointer; transition:transform .1s, filter .1s;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 4px 12px rgba(0,0,0,.4);
+    }
+    .simon-btn:active { transform:scale(.92); }
+    .simon-btn.lit { filter:brightness(1.6) saturate(1.5); transform:scale(1.08); }
+    .simon-btn:disabled { cursor:not-allowed; opacity:.6; }
+
+    /* ─── MATH ─── */
+    #math-area { display:none; flex-direction:column; gap:10px; width:100%; }
+    #math-timer-bar { height:5px; background:var(--accent); border-radius:3px; transition:width .1s linear; }
+    #math-q { color:#F5E6C8; font-size:.95em; line-height:1.6; font-style:italic; }
+
     /* ─── RHINO BUDDY ─── */
     #rhino-buddy {
       position: absolute; bottom: 6px; right: 10px;
@@ -681,6 +739,90 @@
           <div class="mr-emoji"></div>
           <div class="mr-msg"></div>
           <div class="mr-sub"></div>
+        </div>
+      </div>
+
+      <!-- Shoot -->
+      <div id="shoot-area">
+        <div id="shoot-instr" style="font-size:.82em;color:#A07840;font-style:italic;text-align:center;"></div>
+        <div id="shoot-hud">
+          <span id="shoot-score-txt" style="color:var(--accent);font-weight:bold;font-size:.9em;">Score : 0</span>
+          <span id="shoot-time-txt" style="color:var(--deep);font-weight:bold;font-family:monospace;font-size:.9em;">20s</span>
+        </div>
+        <div id="shoot-grid"></div>
+        <div id="shoot-result" style="display:none;flex-direction:column;gap:6px;text-align:center;">
+          <div class="sr-emoji" style="font-size:2.4em;"></div>
+          <div class="sr-msg"   style="font-size:1em;font-weight:bold;color:var(--accent);"></div>
+          <div class="sr-sub"   style="font-size:.83em;color:#A07840;font-style:italic;"></div>
+        </div>
+      </div>
+
+      <!-- Count -->
+      <div id="count-area">
+        <div id="count-instr" style="font-size:.82em;color:#A07840;font-style:italic;text-align:center;"></div>
+        <div id="count-round-info" style="font-size:.78em;color:#C8A060;"></div>
+        <div id="count-flash" style="display:none;"></div>
+        <div id="count-q-wrap" style="display:none;flex-direction:column;gap:8px;align-items:center;width:100%;">
+          <div id="count-q-text" style="color:#F5E6C8;font-size:.95em;text-align:center;"></div>
+          <div id="count-opts-wrap"></div>
+        </div>
+        <div id="count-result" style="display:none;flex-direction:column;gap:6px;text-align:center;">
+          <div class="cor-emoji" style="font-size:2.4em;"></div>
+          <div class="cor-msg"   style="font-size:1em;font-weight:bold;color:var(--accent);"></div>
+          <div class="cor-sub"   style="font-size:.83em;color:#A07840;font-style:italic;"></div>
+        </div>
+      </div>
+
+      <!-- Pixel Art -->
+      <div id="pixel-area">
+        <div id="pixel-instr" style="font-size:.82em;color:#A07840;font-style:italic;text-align:center;"></div>
+        <div style="display:flex;gap:20px;justify-content:center;align-items:flex-start;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="font-size:.68em;color:#A07840;letter-spacing:1px;text-transform:uppercase;">Modèle</div>
+            <div id="pixel-ref"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="font-size:.68em;color:#A07840;letter-spacing:1px;text-transform:uppercase;">Ton dessin</div>
+            <div id="pixel-draw"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:4px;">
+          <button onclick="pixelSubmit()" style="padding:9px 20px;background:var(--accent);color:#0D0400;border:none;border-radius:20px;font-size:.9em;font-weight:bold;cursor:pointer;font-family:'Georgia',serif;">Valider 🎨</button>
+          <button onclick="pixelClear()"  style="padding:9px 16px;background:transparent;border:1.5px solid #5A3000;color:#A07840;border-radius:20px;font-size:.9em;cursor:pointer;font-family:'Georgia',serif;">Effacer</button>
+        </div>
+        <div id="pixel-result" style="display:none;flex-direction:column;gap:6px;text-align:center;">
+          <div class="pr-emoji" style="font-size:2.4em;"></div>
+          <div class="pr-msg"   style="font-size:1em;font-weight:bold;color:var(--accent);"></div>
+          <div class="pr-sub"   style="font-size:.83em;color:#A07840;font-style:italic;"></div>
+        </div>
+      </div>
+
+      <!-- Simon -->
+      <div id="simon-area">
+        <div id="simon-instr" style="font-size:.82em;color:#A07840;font-style:italic;text-align:center;"></div>
+        <div id="simon-status" style="font-size:.85em;color:#C8A060;text-align:center;min-height:18px;"></div>
+        <div id="simon-pad"></div>
+        <div id="simon-result" style="display:none;flex-direction:column;gap:6px;text-align:center;">
+          <div class="smr-emoji" style="font-size:2.4em;"></div>
+          <div class="smr-msg"   style="font-size:1em;font-weight:bold;color:var(--accent);"></div>
+          <div class="smr-sub"   style="font-size:.83em;color:#A07840;font-style:italic;"></div>
+        </div>
+      </div>
+
+      <!-- Math -->
+      <div id="math-area">
+        <div id="math-instr" style="font-size:.82em;color:#A07840;font-style:italic;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span id="math-progress" style="font-size:.78em;color:#A07840;"></span>
+          <span id="math-timer-txt" style="font-size:2em;font-weight:bold;color:var(--deep);font-family:monospace;"></span>
+        </div>
+        <div id="math-timer-bar" style="width:100%;"></div>
+        <div id="math-q"></div>
+        <div id="math-opts" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <div id="math-result" style="display:none;flex-direction:column;gap:6px;text-align:center;">
+          <div class="mtr-emoji" style="font-size:2.4em;"></div>
+          <div class="mtr-msg"   style="font-size:1em;font-weight:bold;color:var(--accent);"></div>
+          <div class="mtr-sub"   style="font-size:.83em;color:#A07840;font-style:italic;"></div>
         </div>
       </div>
 
@@ -984,6 +1126,11 @@ const QUESTIONS = [
     type:'memory', stop:"🧠 Défi Mémoire",
     instr:"Retrouve les 32 paires d'animaux cachés sous les cartes. Retourne 2 cartes à la fois — si elles sont identiques, elles restent visibles !"
   },
+  { type:'shoot',    stop:"🎯 Chasse au rhino",  instr:"Tape sur les 🦏 aussi vite que possible — évite les autres animaux !" },
+  { type:'count',    stop:"🔢 Ouvre l'œil",      instr:"Mémorise la grille... puis réponds vite !" },
+  { type:'pixelart', stop:"🎨 Pixel Safari",     instr:"Reproduis le dessin du rhino case par case !" },
+  { type:'simon',    stop:"🎵 Simon Safari",     instr:"Mémorise la séquence et reproduis-la dans le même ordre !" },
+  { type:'mathquiz', stop:"⏱ Calcul rapide",    instr:"5 questions, 8 secondes chacune — vas-y !" },
   {
     type:'repeat', stop:"🎙 Défi 2 — Dis-la !",
     phrase:"Les chaussettes de l'archiduchesse sont sèches et archi-sèches",
@@ -996,13 +1143,16 @@ const QUESTIONS = [
 ];
 
 // Checkpoint positions in the scene (px from left of scene-inner)
-const STOPS = [160, 560, 1000, 1450, 1900, 2350, 2600, 2850, 3100, 3400];
-const LABELS = ["Shanghai","Seseh","Pintuyan","Malapascua","Ubud","Labuan Bajo","Mémoire","Défi","Selfie","🎁"];
+const STOPS = [160, 420, 680, 940, 1200, 1460, 1680, 1900, 2100, 2300, 2500, 2700, 2900, 3100, 3380];
+const LABELS = ["Shanghai","Seseh","Pintuyan","Malapascua","Ubud","Labuan Bajo","Mémoire","Rhino","Chiffres","Pixel","Simon","Calcul","Défi","Selfie","🎁"];
 
 // ─── STATE ───
 let qIdx = 0, answered = false, ttStart = null, ttTimer = null, ttDone = false;
 let repeatTimer = null, repeatStart = null;
 let carX = 40; // current car left position in scene-inner
+let shootSpawnInterval = null, shootCountdown = null;
+let mathCountdown = null;
+let simonPlaying = false;
 
 // ─── SCENE BUILD ───
 function buildScene() {
@@ -1097,7 +1247,15 @@ function startGame() {
 }
 
 // ─── DRIVE CAR ───
+function cleanupMinigames() {
+  clearInterval(shootSpawnInterval); clearInterval(shootCountdown);
+  clearInterval(mathCountdown);
+  simonPlaying = false;
+  document.querySelectorAll('.shoot-hole').forEach(h => { h.textContent = ''; if(h.dataset) h.dataset.a = ''; });
+}
+
 function driveTo(stopIdx, callback) {
+  cleanupMinigames();
   const targetX = STOPS[stopIdx];
   const car = document.getElementById('car-wrap');
 
@@ -1180,7 +1338,7 @@ function loadQ(idx) {
 
   const qt = document.getElementById('q-text');
   qt.style.opacity = '0';
-  const titles = { tongue:'Épreuve de vitesse 🏁', memory:'Jeu de mémoire 🧠', repeat:'Défi vocal 🎙', selfie:'Selfie safari 📸' };
+  const titles = { tongue:'Épreuve de vitesse 🏁', memory:'Jeu de mémoire 🧠', repeat:'Défi vocal 🎙', selfie:'Selfie safari 📸', shoot:'Chasse au rhino 🎯', count:'Ouvre l\'œil 🔢', pixelart:'Pixel Safari 🎨', simon:'Simon Safari 🎵', mathquiz:'Calcul rapide ⏱' };
   qt.textContent = q.type === 'quiz' ? q.q : (titles[q.type] || '');
   setTimeout(() => { qt.style.transition = 'opacity .4s'; qt.style.opacity = '1'; }, 50);
 
@@ -1189,7 +1347,7 @@ function loadQ(idx) {
   document.getElementById('skip-wrap').style.display = 'block';
 
   // Hide all panels
-  ['opts','tt-area','memory-area','repeat-area','selfie-area'].forEach(id => {
+  ['opts','tt-area','memory-area','repeat-area','selfie-area','shoot-area','count-area','pixel-area','simon-area','math-area'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -1209,6 +1367,16 @@ function loadQ(idx) {
     buildRepeat(q);
   } else if (q.type === 'selfie') {
     buildSelfie(q);
+  } else if (q.type === 'shoot') {
+    buildShoot(q);
+  } else if (q.type === 'count') {
+    buildCount(q);
+  } else if (q.type === 'pixelart') {
+    buildPixelArt(q);
+  } else if (q.type === 'simon') {
+    buildSimon(q);
+  } else if (q.type === 'mathquiz') {
+    buildMathQuiz(q);
   }
 }
 
