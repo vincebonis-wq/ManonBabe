@@ -1547,6 +1547,7 @@ function buildMemory(q) {
   area.style.display = 'flex';
   document.getElementById('memory-instr').textContent = q.instr;
   document.getElementById('memory-result').style.display = 'none';
+  document.getElementById('rhino-buddy').style.display = 'none';
 
   memFlipped = []; memMatched = 0; memLocked = false; memMoves = 0;
 
@@ -1609,6 +1610,7 @@ function updateMemStats() {
 }
 
 function showMemResult() {
+  document.getElementById('rhino-buddy').style.display = 'block';
   rhinoReact(true);
   playVictory();
   const res = document.getElementById('memory-result');
