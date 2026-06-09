@@ -514,6 +514,25 @@
     .count-opt.correct { background:#0A2010; border-color:var(--green); color:#90EE90; }
     .count-opt.wrong   { background:#200A0A; border-color:var(--red);   color:#FFB3B3; }
 
+    /* ─── RHINO LAUNCHER ─── */
+    #launch-area { display:none; flex-direction:column; gap:10px; align-items:center; width:100%; }
+    #launch-hud { display:flex; justify-content:space-between; width:100%; font-size:.82em; color:#A07840; min-height:18px; }
+    #launch-scene {
+      position:relative; width:100%; height:120px;
+      background:linear-gradient(to bottom,#6BAED6 55%,#8DB87A 55%,#7A9E62 100%);
+      border-radius:12px; overflow:hidden;
+    }
+    #launch-rhino { position:absolute; bottom:6px; left:8px; font-size:2.5em; user-select:none; transition:transform .12s ease; }
+    #launch-rhino.hit { transform:translateX(20px) scale(1.15); }
+    #launch-penguin { position:absolute; bottom:8px; left:88px; font-size:1.9em; user-select:none; will-change:transform; }
+    #launch-power-wrap {
+      position:relative; width:94%; height:28px;
+      background:#1A0A00; border-radius:14px; cursor:pointer; overflow:hidden;
+    }
+    #launch-power-sweet { position:absolute; left:35%; width:30%; height:100%; background:rgba(100,220,100,.28); border-radius:14px; pointer-events:none; }
+    #launch-power-cursor { position:absolute; top:3px; left:50%; width:22px; height:22px; background:var(--accent); border-radius:50%; transform:translateX(-50%); pointer-events:none; box-shadow:0 0 6px rgba(255,200,0,.6); }
+    #launch-tap-hint { font-size:.78em; color:#C8A060; letter-spacing:.5px; }
+
     /* ─── SIMON ─── */
     #simon-area { display:none; flex-direction:column; gap:12px; align-items:center; width:100%; }
     #simon-pad {
@@ -778,7 +797,27 @@
         </div>
       </div>
 
-      <!-- Pixel Art -->
+      <!-- Launch -->
+      <div id="launch-area">
+        <div id="launch-instr" style="font-size:.82em;color:#A07840;font-style:italic;text-align:center;"></div>
+        <div id="launch-hud"><span id="launch-dist-txt"></span><span id="launch-rec-txt"></span></div>
+        <div id="launch-scene" onclick="doLaunch()">
+          <div id="launch-rhino">🦏</div>
+          <div id="launch-penguin">🐧</div>
+        </div>
+        <div id="launch-power-wrap" onclick="doLaunch()">
+          <div id="launch-power-sweet"></div>
+          <div id="launch-power-cursor"></div>
+        </div>
+        <div id="launch-tap-hint">Tape au bon moment — vise la zone verte !</div>
+        <div id="launch-result" style="display:none;flex-direction:column;gap:6px;text-align:center;align-items:center;">
+          <div class="lnr-emoji" style="font-size:2.4em;"></div>
+          <div class="lnr-msg"   style="font-size:1em;font-weight:bold;color:var(--accent);"></div>
+          <div class="lnr-sub"   style="font-size:.83em;color:#A07840;font-style:italic;"></div>
+          <button onclick="launchPlayAgain()" style="margin-top:6px;padding:9px 22px;background:transparent;border:1.5px solid var(--accent);color:var(--accent);border-radius:20px;font-size:.88em;cursor:pointer;font-family:'Georgia',serif;">Rejouer 🔄</button>
+        </div>
+      </div>
+
       <!-- Simon -->
       <div id="simon-area">
         <div id="simon-instr" style="font-size:.82em;color:#A07840;font-style:italic;text-align:center;"></div>
@@ -1110,6 +1149,7 @@ const QUESTIONS = [
   },
   { type:'photo', stop:"📷 Photo Safari", instr:"Appuie vite sur les 🦏 pour les prendre en photo — laisse les autres tranquilles !" },
   { type:'count',    stop:"🔢 Ouvre l'œil",      instr:"Mémorise la grille... puis réponds vite !" },
+  { type:'launch',   stop:"🐧 Rhino Lanceur",     instr:"Le 🦏 va propulser le 🐧 ! Tape quand le curseur est dans la zone verte pour envoyer le plus loin possible." },
   { type:'simon',    stop:"🎵 Simon Safari",     instr:"Mémorise la séquence et reproduis-la dans le même ordre !" },
   { type:'mathquiz', stop:"⏱ Calcul rapide",    instr:"5 questions, 8 secondes chacune — vas-y !" },
   {
@@ -1124,8 +1164,8 @@ const QUESTIONS = [
 ];
 
 // Checkpoint positions in the scene (px from left of scene-inner)
-const STOPS = [160, 420, 680, 940, 1200, 1460, 1680, 1900, 2100, 2500, 2700, 2900, 3100, 3380];
-const LABELS = ["Shanghai","Seseh","Pintuyan","Malapascua","Ubud","Labuan Bajo","Mémoire","Rhino","Chiffres","Simon","Calcul","Défi","Selfie","🎁"];
+const STOPS = [160, 420, 680, 940, 1200, 1460, 1680, 1900, 2100, 2300, 2500, 2700, 2900, 3100, 3380];
+const LABELS = ["Shanghai","Seseh","Pintuyan","Malapascua","Ubud","Labuan Bajo","Mémoire","Rhino","Chiffres","Lanceur","Simon","Calcul","Défi","Selfie","🎁"];
 
 // ─── STATE ───
 let qIdx = 0, answered = false, ttStart = null, ttTimer = null, ttDone = false;
@@ -1134,6 +1174,7 @@ let carX = 40; // current car left position in scene-inner
 let shootSpawnInterval = null, shootCountdown = null;
 let mathCountdown = null;
 let simonPlaying = false;
+let launchAnimFrame = null, launchActive = false, launchCursorPct = 50;
 
 // ─── SCENE BUILD ───
 function buildScene() {
@@ -1232,6 +1273,8 @@ function cleanupMinigames() {
   clearInterval(shootSpawnInterval); clearInterval(shootCountdown);
   clearInterval(mathCountdown);
   simonPlaying = false;
+  launchActive = false;
+  if (launchAnimFrame) { cancelAnimationFrame(launchAnimFrame); launchAnimFrame = null; }
   const zone = document.getElementById('photo-zone');
   if (zone) zone.innerHTML = '';
 }
@@ -1320,7 +1363,7 @@ function loadQ(idx) {
 
   const qt = document.getElementById('q-text');
   qt.style.opacity = '0';
-  const titles = { tongue:'Épreuve de vitesse 🏁', memory:'Jeu de mémoire 🧠', repeat:'Défi vocal 🎙', selfie:'Selfie safari 📸', photo:'Photo Safari 📷', count:'Ouvre l\'œil 🔢', simon:'Simon Safari 🎵', mathquiz:'Calcul rapide ⏱' };
+  const titles = { tongue:'Épreuve de vitesse 🏁', memory:'Jeu de mémoire 🧠', repeat:'Défi vocal 🎙', selfie:'Selfie safari 📸', photo:'Photo Safari 📷', count:'Ouvre l\'œil 🔢', launch:'Rhino Lanceur 🐧', simon:'Simon Safari 🎵', mathquiz:'Calcul rapide ⏱' };
   qt.textContent = q.type === 'quiz' ? q.q : (titles[q.type] || '');
   setTimeout(() => { qt.style.transition = 'opacity .4s'; qt.style.opacity = '1'; }, 50);
 
@@ -1329,7 +1372,7 @@ function loadQ(idx) {
   document.getElementById('skip-wrap').style.display = 'block';
 
   // Hide all panels
-  ['opts','tt-area','memory-area','repeat-area','selfie-area','photo-area','count-area','simon-area','math-area'].forEach(id => {
+  ['opts','tt-area','memory-area','repeat-area','selfie-area','photo-area','count-area','launch-area','simon-area','math-area'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -1353,6 +1396,8 @@ function loadQ(idx) {
     buildPhoto(q);
   } else if (q.type === 'count') {
     buildCount(q);
+  } else if (q.type === 'launch') {
+    buildLaunch(q);
   } else if (q.type === 'simon') {
     buildSimon(q);
   } else if (q.type === 'mathquiz') {
@@ -1940,6 +1985,136 @@ function endCount() {
   res.querySelector('.cor-sub').textContent   = sub;
   document.getElementById('skip-wrap').style.display = 'none';
   document.getElementById('next-wrap').style.display = 'block';
+}
+
+// ─── RHINO LAUNCHER ───
+
+function buildLaunch(q) {
+  document.getElementById('launch-area').style.display = 'flex';
+  document.getElementById('launch-instr').textContent = q.instr;
+  document.getElementById('launch-result').style.display = 'none';
+  document.getElementById('launch-tap-hint').style.display = 'block';
+  document.getElementById('launch-dist-txt').textContent = '';
+  const rec = parseInt(localStorage.getItem('rhino-launch-record') || '0');
+  document.getElementById('launch-rec-txt').textContent = rec > 0 ? 'Record : ' + rec + 'm' : '';
+
+  const rhino = document.getElementById('launch-rhino');
+  const penguin = document.getElementById('launch-penguin');
+  rhino.classList.remove('hit');
+  penguin.style.transition = 'none';
+  penguin.style.transform = '';
+  penguin.textContent = '🐧';
+
+  launchActive = true;
+  const t0 = Date.now();
+  const period = 1600;
+
+  function tick() {
+    if (!launchActive) return;
+    const elapsed = (Date.now() - t0) % period;
+    launchCursorPct = 50 + 50 * Math.sin(2 * Math.PI * elapsed / period - Math.PI / 2);
+    const cursor = document.getElementById('launch-power-cursor');
+    if (cursor) cursor.style.left = launchCursorPct.toFixed(1) + '%';
+    launchAnimFrame = requestAnimationFrame(tick);
+  }
+  launchAnimFrame = requestAnimationFrame(tick);
+}
+
+function doLaunch() {
+  if (!launchActive) return;
+  launchActive = false;
+  cancelAnimationFrame(launchAnimFrame);
+
+  const centeredness = 1 - Math.abs(launchCursorPct - 50) / 50; // 0→1
+  const power = Math.pow(centeredness, 1.3);
+  const distance = Math.round(power * 1000);
+
+  document.getElementById('launch-tap-hint').style.display = 'none';
+
+  // Rhino punch
+  const rhino = document.getElementById('launch-rhino');
+  rhino.classList.add('hit');
+  setTimeout(() => rhino.classList.remove('hit'), 280);
+
+  // Camera shutter-like sound for the hit
+  if (audioCtx) {
+    try {
+      const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.12, audioCtx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.03));
+      const src = audioCtx.createBufferSource();
+      const g = audioCtx.createGain();
+      g.gain.value = 0.28;
+      src.buffer = buf; src.connect(g); g.connect(audioCtx.destination);
+      src.start();
+    } catch(e) {}
+  }
+
+  // Physics-based parabolic flight
+  const scene = document.getElementById('launch-scene');
+  const penguin = document.getElementById('launch-penguin');
+  const sceneW = scene.offsetWidth || 300;
+  const maxFlyPx = sceneW - 100;
+
+  const speed = power * 18;
+  let vx = speed * 0.72;
+  let vy = -speed * 0.72;
+  const gravity = power > 0.05 ? 0.55 : 0.2;
+  let x = 0, y = 0;
+  let phase = 'fly';
+
+  setTimeout(() => {
+    function flyFrame() {
+      if (phase !== 'fly') return;
+      vx *= 0.992;
+      vy += gravity;
+      x += vx; y += vy;
+      const rot = Math.atan2(vy, vx) * 180 / Math.PI;
+      penguin.style.transform = `translate(${Math.min(x, maxFlyPx + 20)}px, ${y}px) rotate(${rot}deg)`;
+      if (y >= 0 && x > 30) {
+        phase = 'land';
+        penguin.style.transform = `translate(${Math.min(x, maxFlyPx)}px, 0px) rotate(0deg)`;
+        penguin.textContent = '😄';
+        setTimeout(() => showLaunchResult(distance), 350);
+        return;
+      }
+      requestAnimationFrame(flyFrame);
+    }
+    requestAnimationFrame(flyFrame);
+  }, 160);
+}
+
+function showLaunchResult(distance) {
+  const prevRec = parseInt(localStorage.getItem('rhino-launch-record') || '0');
+  const isRecord = distance > prevRec;
+  if (isRecord) localStorage.setItem('rhino-launch-record', distance);
+  const rec = Math.max(distance, prevRec);
+
+  document.getElementById('launch-dist-txt').textContent = distance + 'm';
+  document.getElementById('launch-rec-txt').textContent = 'Record : ' + rec + 'm' + (isRecord ? ' 🆕' : '');
+
+  if (distance > 0) { rhinoReact(true); if (distance >= 700) playVictory(); }
+
+  const res = document.getElementById('launch-result');
+  res.style.display = 'flex';
+  const [emoji, msg, sub] = distance >= 900
+    ? ['🏆', 'Tir parfait !', distance + 'm — Le pingouin est aux anges 🐧✨']
+    : distance >= 650
+    ? ['⭐', 'Super lancer !', distance + 'm — Le pingouin sourit de toutes ses dents 🐧']
+    : distance >= 350
+    ? ['🦏', 'Pas mal !', distance + 'm — Le pingouin est content quand même 🐧']
+    : ['😅', 'Raté le timing !', distance + 'm — Réessaie, le pingouin t\'encourage 🐧'];
+  res.querySelector('.lnr-emoji').textContent = emoji;
+  res.querySelector('.lnr-msg').textContent   = msg;
+  res.querySelector('.lnr-sub').textContent   = sub;
+  document.getElementById('skip-wrap').style.display = 'none';
+  document.getElementById('next-wrap').style.display = 'block';
+}
+
+function launchPlayAgain() {
+  document.getElementById('next-wrap').style.display = 'none';
+  document.getElementById('skip-wrap').style.display = 'block';
+  buildLaunch(QUESTIONS[qIdx]);
 }
 
 // ─── SIMON SAYS ───
