@@ -515,23 +515,41 @@
     .count-opt.wrong   { background:#200A0A; border-color:var(--red);   color:#FFB3B3; }
 
     /* ─── RHINO LAUNCHER ─── */
-    #launch-area { display:none; flex-direction:column; gap:10px; align-items:center; width:100%; }
-    #launch-hud { display:flex; justify-content:space-between; width:100%; font-size:.82em; color:#A07840; min-height:18px; }
+    #launch-area { display:none; flex-direction:column; gap:8px; align-items:center; width:100%; }
+    #launch-hud { display:flex; justify-content:space-between; width:100%; font-size:.85em; color:#A07840; min-height:20px; padding:0 2px; font-weight:bold; }
     #launch-scene {
-      position:relative; width:100%; height:120px;
-      background:linear-gradient(to bottom,#6BAED6 55%,#8DB87A 55%,#7A9E62 100%);
-      border-radius:12px; overflow:hidden;
+      position:relative; width:100%; height:190px;
+      background:linear-gradient(to bottom,#4A9ED6 0%,#87CEEB 50%,#87CEEB 60%,#5C9E3A 60%,#4A8A2A 100%);
+      border-radius:14px; overflow:hidden; cursor:pointer;
+      border:2px solid #3A6A1A; box-shadow:0 4px 16px rgba(0,0,0,.3);
     }
-    #launch-rhino { position:absolute; bottom:6px; left:8px; font-size:2.5em; user-select:none; transition:transform .12s ease; }
-    #launch-rhino.hit { transform:translateX(20px) scale(1.15); }
-    #launch-penguin { position:absolute; bottom:8px; left:88px; font-size:1.9em; user-select:none; will-change:transform; }
-    #launch-power-wrap {
-      position:relative; width:94%; height:28px;
-      background:#1A0A00; border-radius:14px; cursor:pointer; overflow:hidden;
+    #launch-sun { position:absolute; top:6px; left:10px; font-size:1.3em; pointer-events:none; }
+    .launch-cloud { position:absolute; font-size:1.2em; opacity:.75; pointer-events:none; }
+    .l-mark { position:absolute; bottom:0; display:flex; flex-direction:column; align-items:center; pointer-events:none; }
+    .l-mark-ln { width:1px; height:12px; background:rgba(255,255,255,.55); }
+    .l-mark-tx { font-size:8px; color:rgba(255,255,255,.75); font-weight:bold; }
+    #launch-rhino { position:absolute; bottom:14px; left:8px; font-size:3.2em; user-select:none; z-index:3; transform-origin:bottom center; }
+    @keyframes rhinoSwing { 0%{transform:none} 20%{transform:translateX(16px) scaleX(1.3) rotate(-8deg)} 45%{transform:translateX(32px) scaleX(1.1) scaleY(.88) rotate(12deg)} 70%{transform:translateX(14px) rotate(4deg)} 100%{transform:none} }
+    #launch-rhino.swing { animation:rhinoSwing .5s ease-out forwards; }
+    #launch-penguin { position:absolute; bottom:16px; left:108px; font-size:2.4em; user-select:none; z-index:2; will-change:transform; }
+    /* Vertical angle gauge on right */
+    #launch-gauge {
+      position:absolute; right:12px; top:12px; bottom:12px; width:18px;
+      background:rgba(0,0,0,.45); border-radius:9px; z-index:4; overflow:visible;
     }
-    #launch-power-sweet { position:absolute; left:35%; width:30%; height:100%; background:rgba(100,220,100,.28); border-radius:14px; pointer-events:none; }
-    #launch-power-cursor { position:absolute; top:3px; left:50%; width:22px; height:22px; background:var(--accent); border-radius:50%; transform:translateX(-50%); pointer-events:none; box-shadow:0 0 6px rgba(255,200,0,.6); }
-    #launch-tap-hint { font-size:.78em; color:#C8A060; letter-spacing:.5px; }
+    #launch-gauge-zone { position:absolute; left:0; right:0; top:30%; height:40%; background:rgba(80,230,80,.4); border-radius:6px; }
+    #launch-gauge-needle {
+      position:absolute; left:-6px; right:-6px; height:10px;
+      background:var(--accent); border-radius:5px; top:50%;
+      box-shadow:0 0 10px rgba(255,200,0,.95);
+    }
+    #launch-gauge-tip { position:absolute; right:34px; background:rgba(0,0,0,.55); color:#fff; font-size:.65em; padding:2px 5px; border-radius:6px; white-space:nowrap; top:50%; transform:translateY(-50%); }
+    #launch-fly-dist { position:absolute; top:6px; left:0; right:35px; text-align:center; font-size:1.5em; font-weight:bold; color:#fff; text-shadow:0 2px 6px rgba(0,0,0,.65); display:none; z-index:6; pointer-events:none; }
+    .launch-bird { position:absolute; font-size:1.8em; cursor:pointer; z-index:5; user-select:none; }
+    @keyframes birdFloat { 0%{transform:translateY(0)} 50%{transform:translateY(-8px)} 100%{transform:translateY(0)} }
+    .launch-bonus-txt { position:absolute; font-size:.78em; font-weight:bold; color:#FFD700; pointer-events:none; z-index:7; animation:bonusPop .7s ease forwards; }
+    @keyframes bonusPop { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-28px)} }
+    #launch-hint { font-size:.82em; color:#C8A060; text-align:center; min-height:18px; letter-spacing:.3px; }
 
     /* ─── SIMON ─── */
     #simon-area { display:none; flex-direction:column; gap:12px; align-items:center; width:100%; }
@@ -802,14 +820,19 @@
         <div id="launch-instr" style="font-size:.82em;color:#A07840;font-style:italic;text-align:center;"></div>
         <div id="launch-hud"><span id="launch-dist-txt"></span><span id="launch-rec-txt"></span></div>
         <div id="launch-scene" onclick="doLaunch()">
+          <div id="launch-sun">☀️</div>
+          <div class="launch-cloud" style="top:10px;left:22%">☁️</div>
+          <div class="launch-cloud" style="top:24px;left:52%;font-size:.95em">⛅</div>
           <div id="launch-rhino">🦏</div>
           <div id="launch-penguin">🐧</div>
+          <div id="launch-gauge">
+            <div id="launch-gauge-zone"></div>
+            <div id="launch-gauge-needle"></div>
+            <div id="launch-gauge-tip">45°</div>
+          </div>
+          <div id="launch-fly-dist"></div>
         </div>
-        <div id="launch-power-wrap" onclick="doLaunch()">
-          <div id="launch-power-sweet"></div>
-          <div id="launch-power-cursor"></div>
-        </div>
-        <div id="launch-tap-hint">Tape au bon moment — vise la zone verte !</div>
+        <div id="launch-hint">⌛ Le pingouin arrive…</div>
         <div id="launch-result" style="display:none;flex-direction:column;gap:6px;text-align:center;align-items:center;">
           <div class="lnr-emoji" style="font-size:2.4em;"></div>
           <div class="lnr-msg"   style="font-size:1em;font-weight:bold;color:var(--accent);"></div>
@@ -1996,127 +2019,213 @@ function endCount() {
 }
 
 // ─── RHINO LAUNCHER ───
+let launchPhase = 'idle'; // idle | sliding | ready | flying | done
+let launchBonusMeters = 0;
 
 function buildLaunch(q) {
   document.getElementById('launch-area').style.display = 'flex';
   document.getElementById('launch-instr').textContent = q.instr;
   document.getElementById('launch-result').style.display = 'none';
-  document.getElementById('launch-tap-hint').style.display = 'block';
+  document.getElementById('launch-hint').textContent = '⌛ Le pingouin arrive…';
   document.getElementById('launch-dist-txt').textContent = '';
-  const rec = parseInt(localStorage.getItem('rhino-launch-record') || '0');
-  document.getElementById('launch-rec-txt').textContent = rec > 0 ? 'Record : ' + rec + 'm' : '';
+  document.getElementById('launch-fly-dist').style.display = 'none';
+  document.getElementById('launch-fly-dist').textContent = '';
 
-  const rhino = document.getElementById('launch-rhino');
-  const penguin = document.getElementById('launch-penguin');
-  rhino.classList.remove('hit');
-  penguin.style.transition = 'none';
-  penguin.style.transform = '';
-  penguin.textContent = '🐧';
+  const rec = parseInt(localStorage.getItem('rhino-launch-record') || '0');
+  document.getElementById('launch-rec-txt').textContent = rec > 0 ? '🏆 ' + rec + 'm' : '';
 
   const buddy = document.getElementById('rhino-buddy');
   if (buddy) buddy.style.display = 'none';
 
-  launchActive = true;
-  const t0 = Date.now();
-  const period = 1600;
+  const rhino   = document.getElementById('launch-rhino');
+  const penguin = document.getElementById('launch-penguin');
+  const scene   = document.getElementById('launch-scene');
 
-  function tick() {
-    if (!launchActive) return;
-    const elapsed = (Date.now() - t0) % period;
-    launchCursorPct = 50 + 50 * Math.sin(2 * Math.PI * elapsed / period - Math.PI / 2);
-    const cursor = document.getElementById('launch-power-cursor');
-    if (cursor) cursor.style.left = launchCursorPct.toFixed(1) + '%';
+  rhino.classList.remove('swing');
+  penguin.style.cssText = 'position:absolute;bottom:16px;left:108px;font-size:2.4em;user-select:none;z-index:2;will-change:transform;';
+  penguin.textContent = '🐧';
+  // Remove old birds/marks
+  scene.querySelectorAll('.launch-bird,.launch-bonus-txt,.l-mark').forEach(e => e.remove());
+
+  // Add distance markers
+  [250, 500, 750].forEach(m => {
+    const mk = document.createElement('div');
+    mk.className = 'l-mark';
+    mk.style.left = (m / 1100 * 82 + 10) + '%';
+    mk.innerHTML = `<div class="l-mark-ln"></div><div class="l-mark-tx">${m}m</div>`;
+    scene.appendChild(mk);
+  });
+
+  launchPhase = 'sliding'; launchActive = false; launchBonusMeters = 0;
+
+  // Penguin slides in from right
+  const sceneW = scene.offsetWidth || 320;
+  penguin.style.transform = `translateX(${sceneW - 108}px)`;
+  setTimeout(() => {
+    penguin.style.transition = 'transform 1s ease-out';
+    penguin.style.transform = 'translateX(0)';
+  }, 250);
+
+  // Start angle oscillation after slide
+  setTimeout(() => {
+    launchPhase = 'ready'; launchActive = true;
+    document.getElementById('launch-hint').textContent = '👆 Tape dans la zone verte !';
+    const t0 = Date.now();
+    const period = 1500;
+    function tick() {
+      if (!launchActive) return;
+      const elapsed = (Date.now() - t0) % period;
+      // 0 = top of gauge, 100 = bottom
+      launchCursorPct = 50 + 50 * Math.sin(2 * Math.PI * elapsed / period - Math.PI / 2);
+      const needle = document.getElementById('launch-gauge-needle');
+      const tip    = document.getElementById('launch-gauge-tip');
+      if (needle) needle.style.top = launchCursorPct.toFixed(1) + '%';
+      // Angle: top(0%) = 75°, middle(50%) = 45°, bottom(100%) = 15°
+      const angle = Math.round(75 - launchCursorPct * 0.6);
+      if (tip) tip.textContent = angle + '°';
+      launchAnimFrame = requestAnimationFrame(tick);
+    }
     launchAnimFrame = requestAnimationFrame(tick);
-  }
-  launchAnimFrame = requestAnimationFrame(tick);
+  }, 1400);
 }
 
 function doLaunch() {
-  if (!launchActive) return;
-  launchActive = false;
+  if (!launchActive || launchPhase !== 'ready') return;
+  launchActive = false; launchPhase = 'flying';
   cancelAnimationFrame(launchAnimFrame);
 
-  const centeredness = 1 - Math.abs(launchCursorPct - 50) / 50; // 0→1
-  const power = Math.pow(centeredness, 1.3);
-  const distance = Math.round(power * 1000);
+  // Angle at moment of click: 75° at top, 45° middle, 15° bottom
+  const angleDeg = 75 - launchCursorPct * 0.6;
+  const optAngle = 45;
+  const diff = Math.abs(angleDeg - optAngle); // 0 = perfect
+  const power = Math.max(0, 1 - diff / 34); // 1 at 45°, 0 at 11° or 79°
+  const baseDist = Math.round(Math.pow(power, 1.1) * 1000);
 
-  document.getElementById('launch-tap-hint').style.display = 'none';
+  document.getElementById('launch-hint').textContent = '';
 
-  // Rhino punch
+  // Rhino swing
   const rhino = document.getElementById('launch-rhino');
-  rhino.classList.add('hit');
-  setTimeout(() => rhino.classList.remove('hit'), 280);
+  rhino.classList.add('swing');
+  setTimeout(() => rhino.classList.remove('swing'), 550);
 
-  // Camera shutter-like sound for the hit
-  if (audioCtx) {
-    try {
-      const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.12, audioCtx.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.03));
-      const src = audioCtx.createBufferSource();
-      const g = audioCtx.createGain();
-      g.gain.value = 0.28;
-      src.buffer = buf; src.connect(g); g.connect(audioCtx.destination);
-      src.start();
-    } catch(e) {}
+  // Hit thud sound
+  if (audioCtx) { try {
+    const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.1, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.exp(-i/(audioCtx.sampleRate*0.022));
+    const src = audioCtx.createBufferSource(), g = audioCtx.createGain();
+    g.gain.value = 0.35; src.buffer = buf; src.connect(g); g.connect(audioCtx.destination); src.start();
+  } catch(e){} }
+
+  // Spawn bonus birds mid-flight (clickable for +100m each)
+  const scene = document.getElementById('launch-scene');
+  launchBonusMeters = 0;
+  const birdCount = power > 0.25 ? 1 + Math.floor(Math.random() * 3) : 0;
+  const birds = [];
+  for (let b = 0; b < birdCount; b++) {
+    setTimeout(() => {
+      if (launchPhase !== 'flying') return;
+      const bird = document.createElement('div');
+      bird.className = 'launch-bird';
+      bird.textContent = '🦅';
+      const bx = 18 + Math.random() * 52, by = 5 + Math.random() * 28;
+      bird.style.cssText = `left:${bx}%;top:${by}%;animation:birdFloat .9s ease-in-out infinite alternate;`;
+      bird.addEventListener('click', e => {
+        e.stopPropagation();
+        if (!bird.parentNode) return;
+        launchBonusMeters += 100;
+        const pop = document.createElement('div');
+        pop.className = 'launch-bonus-txt';
+        pop.textContent = '+100m 🦅';
+        pop.style.cssText = `left:${bx}%;top:${by - 5}%;`;
+        scene.appendChild(pop);
+        setTimeout(() => pop.remove(), 750);
+        bird.remove();
+        // Bonus chime
+        if (audioCtx) { try {
+          const osc = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
+          osc.type='sine'; osc.frequency.value=1046;
+          g.gain.setValueAtTime(.18,t); g.gain.exponentialRampToValueAtTime(.001,t+.22);
+          osc.connect(g); g.connect(audioCtx.destination); osc.start(t); osc.stop(t+.25);
+        } catch(e){} }
+      });
+      scene.appendChild(bird);
+      birds.push(bird);
+    }, 350 + b * 550);
   }
 
-  // Physics-based parabolic flight
-  const scene = document.getElementById('launch-scene');
+  // Flight physics (inside scene, compressed)
+  const sceneW = scene.offsetWidth || 320;
   const penguin = document.getElementById('launch-penguin');
-  const sceneW = scene.offsetWidth || 300;
-  const maxFlyPx = sceneW - 100;
+  const maxPx = sceneW - 145;
+  const flyPx = power * maxPx;
+  const peakY = -(55 + power * 90);
+  const angleRad = angleDeg * Math.PI / 180;
 
-  const speed = power * 18;
-  let vx = speed * 0.72;
-  let vy = -speed * 0.72;
-  const gravity = power > 0.05 ? 0.55 : 0.2;
-  let x = 0, y = 0;
-  let phase = 'fly';
-
+  // Phase 1: ascent
   setTimeout(() => {
-    function flyFrame() {
-      if (phase !== 'fly') return;
-      vx *= 0.992;
-      vy += gravity;
-      x += vx; y += vy;
-      const rot = Math.atan2(vy, vx) * 180 / Math.PI;
-      penguin.style.transform = `translate(${Math.min(x, maxFlyPx + 20)}px, ${y}px) rotate(${rot}deg)`;
-      if (y >= 0 && x > 30) {
-        phase = 'land';
-        penguin.style.transform = `translate(${Math.min(x, maxFlyPx)}px, 0px) rotate(0deg)`;
-        penguin.textContent = '😄';
-        setTimeout(() => showLaunchResult(distance), 350);
-        return;
-      }
-      requestAnimationFrame(flyFrame);
-    }
-    requestAnimationFrame(flyFrame);
-  }, 160);
+    penguin.style.transition = `transform ${0.35 + power * 0.45}s cubic-bezier(0.15,0.85,0.65,1)`;
+    penguin.style.transform = `translate(${flyPx * 0.45}px,${peakY}px) rotate(${-15 - power*25}deg)`;
+  }, 420);
+
+  // Phase 2: descent
+  const t1 = 420 + (350 + power * 460);
+  setTimeout(() => {
+    penguin.style.transition = `transform ${0.28 + power * 0.25}s cubic-bezier(0.4,0,1,0.7)`;
+    penguin.style.transform = `translate(${flyPx}px,0px) rotate(30deg)`;
+  }, t1);
+
+  // Phase 3: slide to stop
+  const t2 = t1 + (280 + power * 270);
+  setTimeout(() => {
+    penguin.style.transition = 'transform .55s ease-out';
+    penguin.style.transform = `translate(${Math.min(flyPx + 18, maxPx + 10)}px,0px) rotate(0deg)`;
+    penguin.textContent = '😄';
+  }, t2);
+
+  // Show live distance counter
+  const flyDistEl = document.getElementById('launch-fly-dist');
+  flyDistEl.style.display = 'block';
+  let counted = 0;
+  const countStep = Math.max(8, Math.ceil(baseDist / 60));
+  const iv = setInterval(() => {
+    counted = Math.min(counted + countStep, baseDist);
+    flyDistEl.textContent = counted + 'm';
+    if (counted >= baseDist) clearInterval(iv);
+  }, 35);
+
+  // End
+  setTimeout(() => {
+    birds.forEach(b => { if (b.parentNode) b.remove(); });
+    showLaunchResult(baseDist);
+  }, t2 + 900);
 }
 
-function showLaunchResult(distance) {
+function showLaunchResult(baseDist) {
+  launchPhase = 'done';
+  const total = baseDist + launchBonusMeters;
   const prevRec = parseInt(localStorage.getItem('rhino-launch-record') || '0');
-  const isRecord = distance > prevRec;
-  if (isRecord) localStorage.setItem('rhino-launch-record', distance);
-  const rec = Math.max(distance, prevRec);
+  const isRecord = total > prevRec;
+  if (isRecord) localStorage.setItem('rhino-launch-record', total);
+  const rec = Math.max(total, prevRec);
 
-  document.getElementById('launch-dist-txt').textContent = distance + 'm';
-  document.getElementById('launch-rec-txt').textContent = 'Record : ' + rec + 'm' + (isRecord ? ' 🆕' : '');
+  document.getElementById('launch-fly-dist').textContent = total + 'm' + (launchBonusMeters > 0 ? ' (+' + launchBonusMeters + 'm 🦅)' : '');
+  document.getElementById('launch-dist-txt').textContent = total + 'm';
+  document.getElementById('launch-rec-txt').textContent  = '🏆 ' + rec + 'm' + (isRecord ? ' 🆕' : '');
 
   const buddy = document.getElementById('rhino-buddy');
   if (buddy) buddy.style.display = 'block';
-  if (distance > 0) { rhinoReact(true); if (distance >= 700) playVictory(); }
+  if (total >= 300) { rhinoReact(true); if (total >= 700) playVictory(); }
 
   const res = document.getElementById('launch-result');
   res.style.display = 'flex';
-  const [emoji, msg, sub] = distance >= 900
-    ? ['🏆', 'Tir parfait !', distance + 'm — Le pingouin est aux anges 🐧✨']
-    : distance >= 650
-    ? ['⭐', 'Super lancer !', distance + 'm — Le pingouin sourit de toutes ses dents 🐧']
-    : distance >= 350
-    ? ['🦏', 'Pas mal !', distance + 'm — Le pingouin est content quand même 🐧']
-    : ['😅', 'Raté le timing !', distance + 'm — Réessaie, le pingouin t\'encourage 🐧'];
+  const [emoji, msg, sub] = total >= 950
+    ? ['🏆','Tir parfait !', total + 'm — Le pingouin est aux anges 🐧✨']
+    : total >= 700
+    ? ['⭐','Super lancer !', total + 'm — Le pingouin adore ça 🐧']
+    : total >= 400
+    ? ['🦏','Bien envoyé !', total + 'm — Pas mal du tout 🐧']
+    : ['😅','Raté l\'angle !', total + 'm — Réessaie, le pingouin t\'encourage 🐧'];
   res.querySelector('.lnr-emoji').textContent = emoji;
   res.querySelector('.lnr-msg').textContent   = msg;
   res.querySelector('.lnr-sub').textContent   = sub;
