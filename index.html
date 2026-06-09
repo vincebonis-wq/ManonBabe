@@ -1794,6 +1794,447 @@ function showMemResult() {
   document.getElementById('next-wrap').style.display = 'block';
 }
 
+// ─── SHOOT (Whack-a-rhino) ───
+const SHOOT_DECOYS = ['🦁','🐆','🦓','🐊','🦛','🦍','🦜','🐢','🦒'];
+
+function buildShoot(q) {
+  document.getElementById('shoot-area').style.display = 'flex';
+  document.getElementById('shoot-instr').textContent = q.instr;
+  document.getElementById('shoot-result').style.display = 'none';
+  shootScore = 0; shootTimeLeft = 20;
+
+  const grid = document.getElementById('shoot-grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const hole = document.createElement('div');
+    hole.className = 'shoot-hole';
+    hole.addEventListener('click', () => shootClick(hole));
+    grid.appendChild(hole);
+  }
+  updateShootHUD();
+
+  shootSpawnInterval = setInterval(() => {
+    const holes = [...document.querySelectorAll('.shoot-hole')];
+    holes.forEach(h => { h.textContent = ''; h.dataset.a = ''; h.className = 'shoot-hole'; });
+    const idx = Math.floor(Math.random() * 9);
+    const isRhino = Math.random() < 0.38;
+    const animal = isRhino ? '🦏' : SHOOT_DECOYS[Math.floor(Math.random() * SHOOT_DECOYS.length)];
+    holes[idx].textContent = animal;
+    holes[idx].dataset.a = animal;
+  }, 820);
+
+  shootCountdown = setInterval(() => {
+    shootTimeLeft--;
+    updateShootHUD();
+    if (shootTimeLeft <= 0) endShoot();
+  }, 1000);
+}
+
+let shootScore = 0, shootTimeLeft = 20;
+
+function shootClick(hole) {
+  if (!hole.textContent) return;
+  const ok = hole.dataset.a === '🦏';
+  shootScore = Math.max(0, shootScore + (ok ? 1 : -1));
+  hole.classList.add(ok ? 'hit-good' : 'hit-bad');
+  if (ok && audioCtx) {
+    const osc = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
+    osc.frequency.value = 880; osc.type = 'sine';
+    g.gain.setValueAtTime(.15, t); g.gain.exponentialRampToValueAtTime(.001, t + .15);
+    osc.connect(g); g.connect(audioCtx.destination); osc.start(t); osc.stop(t + .18);
+  }
+  hole.textContent = ''; hole.dataset.a = '';
+  updateShootHUD();
+  setTimeout(() => hole.className = 'shoot-hole', 320);
+}
+
+function updateShootHUD() {
+  document.getElementById('shoot-score-txt').textContent = 'Score : ' + shootScore;
+  document.getElementById('shoot-time-txt').textContent  = shootTimeLeft + 's';
+}
+
+function endShoot() {
+  clearInterval(shootSpawnInterval); clearInterval(shootCountdown);
+  document.querySelectorAll('.shoot-hole').forEach(h => { h.textContent = ''; h.dataset.a = ''; });
+  rhinoReact(true); playVictory();
+  const res = document.getElementById('shoot-result');
+  res.style.display = 'flex';
+  const [emoji, msg, sub] = shootScore >= 15
+    ? ['🏹','Chasseuse d\'élite !', shootScore + ' rhinos — Score légendaire 🎯']
+    : shootScore >= 8
+    ? ['⭐','Bien visé !', shootScore + ' rhinos trouvés 💪']
+    : ['🦏','Ils ont failli t\'échapper !', shootScore + ' rhinos sauvés quand même 😄'];
+  res.querySelector('.sr-emoji').textContent = emoji;
+  res.querySelector('.sr-msg').textContent   = msg;
+  res.querySelector('.sr-sub').textContent   = sub;
+  document.getElementById('skip-wrap').style.display = 'none';
+  document.getElementById('next-wrap').style.display = 'block';
+}
+
+// ─── COUNT ───
+let countRound = 0, countScore = 0, countAnswered = false;
+const COUNT_TARGETS = ['🦁','🐘','🦏'];
+const COUNT_POOL    = ['🦁','🐘','🦒','🦏','🐆','🦓','🐊','🦛'];
+
+function buildCount(q) {
+  document.getElementById('count-area').style.display = 'flex';
+  document.getElementById('count-instr').textContent = q.instr;
+  document.getElementById('count-result').style.display = 'none';
+  countRound = 0; countScore = 0;
+  runCountRound();
+}
+
+function runCountRound() {
+  countAnswered = false;
+  const target = COUNT_TARGETS[countRound];
+  const total = 24;
+  const targetCount = 4 + Math.floor(Math.random() * 5); // 4-8
+  const others = COUNT_POOL.filter(a => a !== target);
+  const cells = Array(targetCount).fill(target);
+  for (let i = cells.length; i < total; i++) cells.push(others[Math.floor(Math.random() * others.length)]);
+  for (let i = cells.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cells[i], cells[j]] = [cells[j], cells[i]];
+  }
+
+  document.getElementById('count-round-info').textContent = 'Manche ' + (countRound + 1) + '/3';
+  const flash = document.getElementById('count-flash');
+  const qWrap = document.getElementById('count-q-wrap');
+  flash.style.display = 'block';
+  qWrap.style.display = 'none';
+  flash.textContent = cells.join(' ');
+
+  setTimeout(() => {
+    flash.style.display = 'none';
+    qWrap.style.display = 'flex';
+    document.getElementById('count-q-text').textContent = 'Combien de ' + target + ' avait-il dans la grille ?';
+    // Generate 4 options around the real count
+    const opts = new Set([targetCount]);
+    while (opts.size < 4) opts.add(Math.max(1, targetCount + Math.floor(Math.random() * 7) - 3));
+    const optsArr = [...opts].sort((a, b) => a - b);
+    const optsDiv = document.getElementById('count-opts-wrap');
+    optsDiv.innerHTML = '';
+    optsArr.forEach(n => {
+      const btn = document.createElement('button');
+      btn.className = 'count-opt';
+      btn.textContent = n;
+      btn.onclick = () => {
+        if (countAnswered) return;
+        countAnswered = true;
+        optsDiv.querySelectorAll('.count-opt').forEach(b => b.disabled = true);
+        if (n === targetCount) {
+          btn.classList.add('correct');
+          countScore++;
+          rhinoReact(true);
+        } else {
+          btn.classList.add('wrong');
+          optsDiv.querySelectorAll('.count-opt').forEach(b => { if (+b.textContent === targetCount) b.classList.add('correct'); });
+          rhinoReact(false);
+        }
+        countRound++;
+        if (countRound < 3) {
+          setTimeout(runCountRound, 1200);
+        } else {
+          setTimeout(endCount, 1200);
+        }
+      };
+      optsDiv.appendChild(btn);
+    });
+  }, 2500);
+}
+
+function endCount() {
+  const res = document.getElementById('count-result');
+  res.style.display = 'flex';
+  document.getElementById('count-q-wrap').style.display = 'none';
+  rhinoReact(true); playVictory();
+  const [emoji, msg, sub] = countScore === 3
+    ? ['🦅','Oeil de faucon !', '3/3 — Mémoire parfaite 🧠']
+    : countScore === 2
+    ? ['⭐','Bonne mémoire !', '2/3 — Très bien 👀']
+    : ['🦒','Continue d\'entraîner l\'œil !', countScore + '/3 — C\'était rapide 😄'];
+  res.querySelector('.cor-emoji').textContent = emoji;
+  res.querySelector('.cor-msg').textContent   = msg;
+  res.querySelector('.cor-sub').textContent   = sub;
+  document.getElementById('skip-wrap').style.display = 'none';
+  document.getElementById('next-wrap').style.display = 'block';
+}
+
+// ─── PIXEL ART ───
+const PIXEL_REF = [
+  [0,0,1,1,1,0,0,0],
+  [0,1,1,1,1,1,0,1],
+  [1,1,1,1,1,1,0,0],
+  [1,1,1,1,1,1,1,0],
+  [1,1,1,1,1,1,1,0],
+  [0,1,1,1,1,1,0,0],
+  [0,0,1,0,0,1,0,0],
+  [0,0,1,0,0,1,0,0],
+];
+let pixelUserGrid = [];
+
+function buildPixelArt(q) {
+  document.getElementById('pixel-area').style.display = 'flex';
+  document.getElementById('pixel-instr').textContent = q.instr;
+  document.getElementById('pixel-result').style.display = 'none';
+  pixelUserGrid = Array.from({length:8}, () => Array(8).fill(0));
+
+  // Reference grid
+  const refEl = document.getElementById('pixel-ref');
+  refEl.innerHTML = '';
+  PIXEL_REF.forEach(row => row.forEach(v => {
+    const c = document.createElement('div');
+    c.className = 'px-cell ' + (v ? 'px-ref-on' : 'px-ref-off');
+    refEl.appendChild(c);
+  }));
+
+  // Drawing grid
+  const drawEl = document.getElementById('pixel-draw');
+  drawEl.innerHTML = '';
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const cell = document.createElement('div');
+    cell.className = 'px-cell px-draw-off';
+    cell.dataset.r = r; cell.dataset.c = c;
+    cell.addEventListener('click', () => togglePixel(cell, r, c));
+    drawEl.appendChild(cell);
+  }
+}
+
+function togglePixel(cell, r, c) {
+  pixelUserGrid[r][c] ^= 1;
+  cell.className = 'px-cell ' + (pixelUserGrid[r][c] ? 'px-draw-on' : 'px-draw-off');
+}
+
+function pixelClear() {
+  pixelUserGrid = Array.from({length:8}, () => Array(8).fill(0));
+  document.querySelectorAll('#pixel-draw .px-cell').forEach(c => c.className = 'px-cell px-draw-off');
+}
+
+function pixelSubmit() {
+  let correct = 0;
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    if (pixelUserGrid[r][c] === PIXEL_REF[r][c]) correct++;
+  }
+  const pct = Math.round(correct / 64 * 100);
+  rhinoReact(true); playVictory();
+  const res = document.getElementById('pixel-result');
+  res.style.display = 'flex';
+  const [emoji, msg, sub] = pct >= 90
+    ? ['🎨','Artiste accomplie !', pct + '% de précision — Magnifique 🦏']
+    : pct >= 70
+    ? ['⭐','Beau dessin !', pct + '% — C\'est reconnaissable 💪']
+    : ['🖌️','Peintre en herbe !', pct + '% — Le rhino te dit merci quand même 😄'];
+  res.querySelector('.pr-emoji').textContent = emoji;
+  res.querySelector('.pr-msg').textContent   = msg;
+  res.querySelector('.pr-sub').textContent   = sub;
+  document.getElementById('skip-wrap').style.display = 'none';
+  document.getElementById('next-wrap').style.display = 'block';
+}
+
+// ─── SIMON SAYS ───
+const SIMON_BTNS = [
+  { emoji:'🦁', bg:'#E65100', freq:260 },
+  { emoji:'🐘', bg:'#546E7A', freq:180 },
+  { emoji:'🦒', bg:'#F9A825', freq:380 },
+  { emoji:'🦏', bg:'#6D4C41', freq:140 },
+];
+let simonSeq = [], simonInput = [], simonRound = 0, simonMaxRound = 7;
+
+function buildSimon(q) {
+  document.getElementById('simon-area').style.display = 'flex';
+  document.getElementById('simon-instr').textContent = q.instr;
+  document.getElementById('simon-status').textContent = '';
+  document.getElementById('simon-result').style.display = 'none';
+  simonSeq = []; simonInput = []; simonRound = 0; simonPlaying = false;
+
+  const pad = document.getElementById('simon-pad');
+  pad.innerHTML = '';
+  SIMON_BTNS.forEach((b, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'simon-btn';
+    btn.id = 'simon-btn-' + i;
+    btn.textContent = b.emoji;
+    btn.style.background = b.bg;
+    btn.onclick = () => simonUserClick(i);
+    pad.appendChild(btn);
+  });
+
+  setTimeout(simonNextRound, 600);
+}
+
+function simonNextRound() {
+  simonRound++;
+  simonInput = [];
+  simonSeq.push(Math.floor(Math.random() * 4));
+  simonPlaying = true;
+  document.getElementById('simon-status').textContent = 'Séquence ' + simonRound + '/' + simonMaxRound + ' — Regarde bien…';
+  document.querySelectorAll('.simon-btn').forEach(b => b.disabled = true);
+  playSimonSeq(0);
+}
+
+function playSimonSeq(idx) {
+  if (idx >= simonSeq.length) {
+    simonPlaying = false;
+    document.querySelectorAll('.simon-btn').forEach(b => b.disabled = false);
+    document.getElementById('simon-status').textContent = 'À ton tour !';
+    return;
+  }
+  const btnIdx = simonSeq[idx];
+  const btn = document.getElementById('simon-btn-' + btnIdx);
+  btn.classList.add('lit');
+  playSimonTone(btnIdx);
+  setTimeout(() => {
+    btn.classList.remove('lit');
+    setTimeout(() => playSimonSeq(idx + 1), 180);
+  }, 580);
+}
+
+function playSimonTone(idx) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
+  osc.type = 'triangle';
+  osc.frequency.value = SIMON_BTNS[idx].freq;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(.25, t + .03);
+  g.gain.exponentialRampToValueAtTime(.001, t + .55);
+  osc.connect(g); g.connect(audioCtx.destination);
+  osc.start(t); osc.stop(t + .6);
+}
+
+function simonUserClick(idx) {
+  if (simonPlaying) return;
+  const btn = document.getElementById('simon-btn-' + idx);
+  btn.classList.add('lit');
+  playSimonTone(idx);
+  setTimeout(() => btn.classList.remove('lit'), 250);
+
+  simonInput.push(idx);
+  const pos = simonInput.length - 1;
+
+  if (simonInput[pos] !== simonSeq[pos]) {
+    document.getElementById('simon-status').textContent = 'Raté ! 😅';
+    document.querySelectorAll('.simon-btn').forEach(b => b.disabled = true);
+    setTimeout(() => endSimon(false), 700);
+    return;
+  }
+
+  if (simonInput.length === simonSeq.length) {
+    if (simonRound >= simonMaxRound) {
+      document.getElementById('simon-status').textContent = 'Parfait ! 🏆';
+      document.querySelectorAll('.simon-btn').forEach(b => b.disabled = true);
+      setTimeout(() => endSimon(true), 600);
+    } else {
+      document.getElementById('simon-status').textContent = 'Parfait ! Suivant…';
+      setTimeout(simonNextRound, 900);
+    }
+  }
+}
+
+function endSimon(won) {
+  rhinoReact(won); if (won) playVictory();
+  const res = document.getElementById('simon-result');
+  res.style.display = 'flex';
+  const [emoji, msg, sub] = won
+    ? ['🏆','Mémoire de safari !', '7/7 séquences — Extraordinaire 🎵']
+    : simonRound >= 5
+    ? ['⭐','Super performance !', simonRound + '/' + simonMaxRound + ' rounds — Très bien 💪']
+    : ['🎵','Belle tentative !', simonRound + '/' + simonMaxRound + ' rounds — Continue d\'écouter 🦁'];
+  res.querySelector('.smr-emoji').textContent = emoji;
+  res.querySelector('.smr-msg').textContent   = msg;
+  res.querySelector('.smr-sub').textContent   = sub;
+  document.getElementById('skip-wrap').style.display = 'none';
+  document.getElementById('next-wrap').style.display = 'block';
+}
+
+// ─── MATH QUIZ ───
+const MATH_QUESTIONS = [
+  { q:"Un rhinocéros mange 150 kg d'herbe par jour. Combien en 4 jours ?", opts:["450 kg","500 kg","600 kg","750 kg"], correct:2 },
+  { q:"Il reste 80 rhinocéros de Sumatra. Il y en avait 120. Combien ont disparu ?", opts:["30","40","45","50"], correct:1 },
+  { q:"Notre voyage dure 120 jours. Combien de semaines (arrondi) ?", opts:["12","15","17","20"], correct:2 },
+  { q:"Éléphant vit 60 ans, rhinocéros 45 ans. Quelle est la différence ?", opts:["10 ans","12 ans","15 ans","20 ans"], correct:2 },
+  { q:"18 plongées en 3 mois. Combien par mois ?", opts:["4","5","6","7"], correct:2 },
+];
+let mathIdx = 0, mathScore = 0, mathTimeLeft = 8;
+
+function buildMathQuiz(q) {
+  document.getElementById('math-area').style.display = 'flex';
+  document.getElementById('math-instr').textContent = q.instr;
+  document.getElementById('math-result').style.display = 'none';
+  mathIdx = 0; mathScore = 0;
+  runMathQ();
+}
+
+function runMathQ() {
+  clearInterval(mathCountdown);
+  if (mathIdx >= MATH_QUESTIONS.length) { endMath(); return; }
+  mathTimeLeft = 8;
+  const mq = MATH_QUESTIONS[mathIdx];
+  document.getElementById('math-progress').textContent = 'Question ' + (mathIdx + 1) + '/' + MATH_QUESTIONS.length;
+  document.getElementById('math-q').textContent = mq.q;
+  document.getElementById('math-timer-txt').textContent = mathTimeLeft;
+  document.getElementById('math-timer-bar').style.width = '100%';
+  document.getElementById('math-timer-bar').style.background = 'var(--accent)';
+
+  const opts = document.getElementById('math-opts');
+  opts.innerHTML = '';
+  mq.opts.forEach((txt, i) => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.innerHTML = '<div class="opt-key">' + ['A','B','C','D'][i] + '</div><span>' + txt + '</span>';
+    b.onclick = () => answerMath(i, mq);
+    opts.appendChild(b);
+  });
+
+  mathCountdown = setInterval(() => {
+    mathTimeLeft--;
+    document.getElementById('math-timer-txt').textContent = mathTimeLeft;
+    document.getElementById('math-timer-bar').style.width = (mathTimeLeft / 8 * 100) + '%';
+    if (mathTimeLeft <= 3) document.getElementById('math-timer-bar').style.background = 'var(--red)';
+    if (mathTimeLeft <= 0) {
+      clearInterval(mathCountdown);
+      const allOpts = document.querySelectorAll('#math-opts .opt');
+      allOpts.forEach(b => b.disabled = true);
+      allOpts[mq.correct].classList.add('correct');
+      rhinoReact(false);
+      mathIdx++;
+      setTimeout(runMathQ, 1100);
+    }
+  }, 1000);
+}
+
+function answerMath(chosen, mq) {
+  clearInterval(mathCountdown);
+  const allOpts = document.querySelectorAll('#math-opts .opt');
+  allOpts.forEach(b => b.disabled = true);
+  if (chosen === mq.correct) {
+    allOpts[chosen].classList.add('correct');
+    mathScore++;
+    rhinoReact(true);
+  } else {
+    allOpts[chosen].classList.add('wrong');
+    allOpts[mq.correct].classList.add('correct');
+    rhinoReact(false);
+  }
+  mathIdx++;
+  setTimeout(runMathQ, 1000);
+}
+
+function endMath() {
+  rhinoReact(true); playVictory();
+  const res = document.getElementById('math-result');
+  res.style.display = 'flex';
+  const [emoji, msg, sub] = mathScore === 5
+    ? ['🧮','Génie du safari !', '5/5 — Parfait ! 🌟']
+    : mathScore >= 3
+    ? ['⭐','Bonne logique !', mathScore + '/5 — Bien joué 💪']
+    : ['🦒','Les maths du safari, ça s\'apprend !', mathScore + '/5 — Mais tu as essayé ! 😄'];
+  res.querySelector('.mtr-emoji').textContent = emoji;
+  res.querySelector('.mtr-msg').textContent   = msg;
+  res.querySelector('.mtr-sub').textContent   = sub;
+  document.getElementById('skip-wrap').style.display = 'none';
+  document.getElementById('next-wrap').style.display = 'block';
+}
+
 // ─── VICTOIRE ───
 function playVictory() {
   if (!audioCtx) return;
