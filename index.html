@@ -475,32 +475,35 @@
     #memory-result .mr-msg   { font-size: 1em; font-weight: bold; color: var(--accent); }
     #memory-result .mr-sub   { font-size: .83em; color: #A07840; font-style: italic; }
 
-    /* ─── SHOOT ─── */
-    #shoot-area { display:none; flex-direction:column; gap:10px; align-items:center; width:100%; }
-    #shoot-zone {
+    /* ─── PHOTO SAFARI (ex-shoot) ─── */
+    #photo-area { display:none; flex-direction:column; gap:10px; align-items:center; width:100%; }
+    #photo-zone {
       position:relative; width:100%; height:200px;
       background:#1A0A00; border:2px solid #3A2000; border-radius:14px;
       overflow:hidden;
     }
-    .shoot-target {
+    .photo-target {
       position:absolute;
       width:64px; height:64px;
       display:flex; align-items:center; justify-content:center;
-      font-size:36px; cursor:pointer; user-select:none;
+      font-size:34px; cursor:pointer; user-select:none;
       background:rgba(255,255,255,.06); border-radius:50%;
       border:2px solid rgba(255,143,0,.25);
-      transition: transform .1s;
       animation: popIn .18s ease;
     }
     @keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
-    .shoot-target:active { transform:scale(.85); }
-    .shoot-target.hit-good { background:rgba(46,125,50,.4); border-color:var(--green); animation:none; }
-    .shoot-target.hit-bad  { background:rgba(198,40,40,.35); border-color:var(--red); animation:none; }
-    #shoot-hud { display:flex; justify-content:space-between; width:100%; padding:0 4px; }
+    .photo-target:active { transform:scale(.85); }
+    .photo-flash { animation: flashAnim .35s ease forwards !important; }
+    @keyframes flashAnim { 0%{box-shadow:0 0 0 0 rgba(255,255,255,.9)} 100%{box-shadow:0 0 0 30px rgba(255,255,255,0); background:rgba(255,220,50,.3);} }
+    #photo-hud { display:flex; justify-content:space-between; width:100%; padding:0 4px; }
 
     /* ─── COUNT ─── */
     #count-area { display:none; flex-direction:column; gap:12px; align-items:center; width:100%; }
-    #count-flash { background:#1E0E00; border:2px solid #3A2000; border-radius:12px; padding:10px; width:100%; text-align:center; font-size:1.5em; line-height:1.9; letter-spacing:3px; min-height:60px; }
+    #count-flash {
+      background:#1E0E00; border:2px solid #3A2000; border-radius:12px;
+      padding:10px; width:100%; text-align:center;
+      font-size:1.4em; line-height:2; letter-spacing:2px; min-height:70px;
+    }
     #count-opts-wrap { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
     .count-opt {
       padding:10px 22px; background:#1E0E00; color:#D4B87A;
@@ -513,10 +516,14 @@
 
     /* ─── PIXEL ART ─── */
     #pixel-area { display:none; flex-direction:column; gap:10px; align-items:center; width:100%; }
-    #pixel-ref, #pixel-draw { display:grid; gap:2px; grid-template-columns:repeat(8,1fr); }
+    #pixel-ref, #pixel-draw {
+      display:grid;
+      grid-template-columns: repeat(8, clamp(16px,4.5vw,26px));
+      gap:2px;
+    }
     .px-cell {
-      width:clamp(18px,5vw,30px); height:clamp(18px,5vw,30px);
-      border-radius:3px; box-sizing:border-box;
+      width:clamp(16px,4.5vw,26px); height:clamp(16px,4.5vw,26px);
+      border-radius:2px;
     }
     .px-ref-on  { background:#C8A040; }
     .px-ref-off { background:#1A0A00; border:1px solid #2A1400; }
@@ -526,21 +533,27 @@
 
     /* ─── SIMON ─── */
     #simon-area { display:none; flex-direction:column; gap:12px; align-items:center; width:100%; }
-    #simon-pad { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:250px; }
+    #simon-pad {
+      display:grid; grid-template-columns:1fr 1fr; gap:10px;
+      width:100%; max-width:260px;
+    }
     .simon-btn {
-      aspect-ratio:1; border:none; border-radius:14px; font-size:clamp(24px,7vw,38px);
-      cursor:pointer; transition:transform .1s, filter .1s;
+      height:clamp(80px,22vw,115px);
+      border:none; border-radius:14px;
+      font-size:clamp(26px,8vw,40px);
+      cursor:pointer;
       display:flex; align-items:center; justify-content:center;
       box-shadow:0 4px 12px rgba(0,0,0,.4);
+      transition: transform .1s, filter .15s;
     }
     .simon-btn:active { transform:scale(.92); }
-    .simon-btn.lit { filter:brightness(1.6) saturate(1.5); transform:scale(1.08); }
-    .simon-btn:disabled { cursor:not-allowed; opacity:.6; }
+    .simon-btn.lit { filter:brightness(1.7) saturate(1.5); transform:scale(1.07); }
+    .simon-btn:disabled { cursor:not-allowed; opacity:.55; }
 
     /* ─── MATH ─── */
     #math-area { display:none; flex-direction:column; gap:10px; width:100%; }
-    #math-timer-bar { height:5px; background:var(--accent); border-radius:3px; transition:width .1s linear; }
-    #math-q { color:#F5E6C8; font-size:.95em; line-height:1.6; font-style:italic; }
+    #math-timer-bar { height:5px; background:var(--accent); border-radius:3px; transition:width .9s linear; width:100%; }
+    #math-q { color:#F5E6C8; font-size:.95em; line-height:1.6; font-style:italic; min-height:40px; }
 
     /* ─── RHINO BUDDY ─── */
     #rhino-buddy {
@@ -751,18 +764,18 @@
         </div>
       </div>
 
-      <!-- Shoot -->
-      <div id="shoot-area">
-        <div id="shoot-instr" style="font-size:.82em;color:#A07840;font-style:italic;text-align:center;"></div>
-        <div id="shoot-hud">
-          <span id="shoot-score-txt" style="color:var(--accent);font-weight:bold;font-size:.9em;">Score : 0</span>
-          <span id="shoot-time-txt" style="color:var(--deep);font-weight:bold;font-family:monospace;font-size:.9em;">20s</span>
+      <!-- Photo Safari -->
+      <div id="photo-area">
+        <div id="photo-instr" style="font-size:.82em;color:#A07840;font-style:italic;text-align:center;"></div>
+        <div id="photo-hud">
+          <span id="photo-score-txt" style="color:var(--accent);font-weight:bold;font-size:.9em;">📷 0 photos</span>
+          <span id="photo-time-txt" style="color:var(--deep);font-weight:bold;font-family:monospace;font-size:.9em;">20s</span>
         </div>
-        <div id="shoot-zone"></div>
-        <div id="shoot-result" style="display:none;flex-direction:column;gap:6px;text-align:center;">
-          <div class="sr-emoji" style="font-size:2.4em;"></div>
-          <div class="sr-msg"   style="font-size:1em;font-weight:bold;color:var(--accent);"></div>
-          <div class="sr-sub"   style="font-size:.83em;color:#A07840;font-style:italic;"></div>
+        <div id="photo-zone"></div>
+        <div id="photo-result" style="display:none;flex-direction:column;gap:6px;text-align:center;">
+          <div class="pr2-emoji" style="font-size:2.4em;"></div>
+          <div class="pr2-msg"   style="font-size:1em;font-weight:bold;color:var(--accent);"></div>
+          <div class="pr2-sub"   style="font-size:.83em;color:#A07840;font-style:italic;"></div>
         </div>
       </div>
 
@@ -1135,7 +1148,7 @@ const QUESTIONS = [
     type:'memory', stop:"🧠 Défi Mémoire",
     instr:"Retrouve les 32 paires d'animaux cachés sous les cartes. Retourne 2 cartes à la fois — si elles sont identiques, elles restent visibles !"
   },
-  { type:'shoot',    stop:"🎯 Chasse au rhino",  instr:"Tape sur les 🦏 aussi vite que possible — évite les autres animaux !" },
+  { type:'photo', stop:"📷 Photo Safari", instr:"Appuie vite sur les 🦏 pour les prendre en photo — laisse les autres tranquilles !" },
   { type:'count',    stop:"🔢 Ouvre l'œil",      instr:"Mémorise la grille... puis réponds vite !" },
   { type:'pixelart', stop:"🎨 Pixel Safari",     instr:"Reproduis le dessin du rhino case par case !" },
   { type:'simon',    stop:"🎵 Simon Safari",     instr:"Mémorise la séquence et reproduis-la dans le même ordre !" },
@@ -1260,7 +1273,7 @@ function cleanupMinigames() {
   clearInterval(shootSpawnInterval); clearInterval(shootCountdown);
   clearInterval(mathCountdown);
   simonPlaying = false;
-  const zone = document.getElementById('shoot-zone');
+  const zone = document.getElementById('photo-zone');
   if (zone) zone.innerHTML = '';
 }
 
@@ -1348,7 +1361,7 @@ function loadQ(idx) {
 
   const qt = document.getElementById('q-text');
   qt.style.opacity = '0';
-  const titles = { tongue:'Épreuve de vitesse 🏁', memory:'Jeu de mémoire 🧠', repeat:'Défi vocal 🎙', selfie:'Selfie safari 📸', shoot:'Chasse au rhino 🎯', count:'Ouvre l\'œil 🔢', pixelart:'Pixel Safari 🎨', simon:'Simon Safari 🎵', mathquiz:'Calcul rapide ⏱' };
+  const titles = { tongue:'Épreuve de vitesse 🏁', memory:'Jeu de mémoire 🧠', repeat:'Défi vocal 🎙', selfie:'Selfie safari 📸', photo:'Photo Safari 📷', count:'Ouvre l\'œil 🔢', pixelart:'Pixel Safari 🎨', simon:'Simon Safari 🎵', mathquiz:'Calcul rapide ⏱' };
   qt.textContent = q.type === 'quiz' ? q.q : (titles[q.type] || '');
   setTimeout(() => { qt.style.transition = 'opacity .4s'; qt.style.opacity = '1'; }, 50);
 
@@ -1357,7 +1370,7 @@ function loadQ(idx) {
   document.getElementById('skip-wrap').style.display = 'block';
 
   // Hide all panels
-  ['opts','tt-area','memory-area','repeat-area','selfie-area','shoot-area','count-area','pixel-area','simon-area','math-area'].forEach(id => {
+  ['opts','tt-area','memory-area','repeat-area','selfie-area','photo-area','count-area','pixel-area','simon-area','math-area'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -1377,8 +1390,8 @@ function loadQ(idx) {
     buildRepeat(q);
   } else if (q.type === 'selfie') {
     buildSelfie(q);
-  } else if (q.type === 'shoot') {
-    buildShoot(q);
+  } else if (q.type === 'photo') {
+    buildPhoto(q);
   } else if (q.type === 'count') {
     buildCount(q);
   } else if (q.type === 'pixelart') {
@@ -1804,76 +1817,81 @@ function showMemResult() {
   document.getElementById('next-wrap').style.display = 'block';
 }
 
-// ─── SHOOT (Whack-a-rhino) ───
-const SHOOT_DECOYS = ['🦁','🐆','🦓','🐊','🦛','🦍','🦜','🐢','🦒'];
-let shootScore = 0, shootTimeLeft = 20;
+// ─── PHOTO SAFARI ───
+const PHOTO_DECOYS = ['🦁','🐆','🦓','🐊','🦛','🦍','🦜','🐢','🦒','🐍'];
+let photoScore = 0, photoTimeLeft = 20;
 
-function buildShoot(q) {
-  document.getElementById('shoot-area').style.display = 'flex';
-  document.getElementById('shoot-instr').textContent = q.instr;
-  document.getElementById('shoot-result').style.display = 'none';
-  shootScore = 0; shootTimeLeft = 20;
-  const zone = document.getElementById('shoot-zone');
+function buildPhoto(q) {
+  document.getElementById('photo-area').style.display = 'flex';
+  document.getElementById('photo-instr').textContent = q.instr;
+  document.getElementById('photo-result').style.display = 'none';
+  photoScore = 0; photoTimeLeft = 20;
+  const zone = document.getElementById('photo-zone');
   zone.innerHTML = '';
-  updateShootHUD();
+  updatePhotoHUD();
 
   shootSpawnInterval = setInterval(() => {
-    // Remove previous target
-    const prev = zone.querySelector('.shoot-target');
+    const prev = zone.querySelector('.photo-target');
     if (prev) prev.remove();
 
     const isRhino = Math.random() < 0.40;
-    const animal = isRhino ? '🦏' : SHOOT_DECOYS[Math.floor(Math.random() * SHOOT_DECOYS.length)];
+    const animal = isRhino ? '🦏' : PHOTO_DECOYS[Math.floor(Math.random() * PHOTO_DECOYS.length)];
     const target = document.createElement('div');
-    target.className = 'shoot-target';
+    target.className = 'photo-target';
     target.textContent = animal;
-    // Random position within zone (64x64 target, zone 200px tall)
     const zW = zone.offsetWidth || 300;
-    target.style.left = (Math.random() * (zW - 68) + 2) + 'px';
-    target.style.top  = (Math.random() * 128 + 4) + 'px';
+    target.style.left = (Math.random() * Math.max(10, zW - 72) + 4) + 'px';
+    target.style.top  = (Math.random() * 130 + 4) + 'px';
+
     target.addEventListener('click', () => {
-      const ok = animal === '🦏';
-      shootScore = Math.max(0, shootScore + (ok ? 1 : -1));
-      target.classList.add(ok ? 'hit-good' : 'hit-bad');
-      if (ok && audioCtx) {
-        const osc = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
-        osc.frequency.value = 880; osc.type = 'sine';
-        g.gain.setValueAtTime(.15, t); g.gain.exponentialRampToValueAtTime(.001, t + .15);
-        osc.connect(g); g.connect(audioCtx.destination); osc.start(t); osc.stop(t + .18);
+      if (animal !== '🦏') return; // On ne photographie que les rhinos
+      photoScore++;
+      target.classList.add('photo-flash');
+      // Son d'obturateur
+      if (audioCtx) {
+        const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.06, audioCtx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+        const src = audioCtx.createBufferSource();
+        const g = audioCtx.createGain();
+        src.buffer = buf; g.gain.value = 0.3;
+        src.connect(g); g.connect(audioCtx.destination); src.start();
       }
-      updateShootHUD();
-      setTimeout(() => { if (target.parentNode) target.remove(); }, 250);
+      updatePhotoHUD();
+      setTimeout(() => { if (target.parentNode) target.remove(); }, 300);
     });
     zone.appendChild(target);
-  }, 850);
+  }, 900);
 
   shootCountdown = setInterval(() => {
-    shootTimeLeft--;
-    updateShootHUD();
-    if (shootTimeLeft <= 0) endShoot();
+    photoTimeLeft--;
+    updatePhotoHUD();
+    if (photoTimeLeft <= 0) endPhoto();
   }, 1000);
 }
 
-function updateShootHUD() {
-  document.getElementById('shoot-score-txt').textContent = 'Score : ' + shootScore;
-  document.getElementById('shoot-time-txt').textContent  = shootTimeLeft + 's';
+function updatePhotoHUD() {
+  const s = document.getElementById('photo-score-txt');
+  const t = document.getElementById('photo-time-txt');
+  if (s) s.textContent = '📷 ' + photoScore + ' photos';
+  if (t) t.textContent = photoTimeLeft + 's';
 }
 
-function endShoot() {
+function endPhoto() {
   clearInterval(shootSpawnInterval); clearInterval(shootCountdown);
-  const zone = document.getElementById('shoot-zone');
+  const zone = document.getElementById('photo-zone');
   if (zone) zone.innerHTML = '';
   rhinoReact(true); playVictory();
-  const res = document.getElementById('shoot-result');
+  const res = document.getElementById('photo-result');
   res.style.display = 'flex';
-  const [emoji, msg, sub] = shootScore >= 15
-    ? ['🏹','Chasseuse d\'élite !', shootScore + ' rhinos — Score légendaire 🎯']
-    : shootScore >= 8
-    ? ['⭐','Bien visé !', shootScore + ' rhinos trouvés 💪']
-    : ['🦏','Ils ont failli t\'échapper !', shootScore + ' rhinos sauvés quand même 😄'];
-  res.querySelector('.sr-emoji').textContent = emoji;
-  res.querySelector('.sr-msg').textContent   = msg;
-  res.querySelector('.sr-sub').textContent   = sub;
+  const [emoji, msg, sub] = photoScore >= 12
+    ? ['📷','Photographe pro !', photoScore + ' rhinos immortalisés — Magnifique 🦏💛']
+    : photoScore >= 7
+    ? ['⭐','Bonne chasse photo !', photoScore + ' rhinos capturés 📷']
+    : ['🦏','Les rhinos sont timides…', photoScore + ' photos — Ils t\'aiment quand même 💛'];
+  res.querySelector('.pr2-emoji').textContent = emoji;
+  res.querySelector('.pr2-msg').textContent   = msg;
+  res.querySelector('.pr2-sub').textContent   = sub;
   document.getElementById('skip-wrap').style.display = 'none';
   document.getElementById('next-wrap').style.display = 'block';
 }
