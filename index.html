@@ -869,8 +869,9 @@
         <button class="btn" id="next-btn" onclick="nextQ()">Continuer →</button>
       </div>
 
-      <!-- Skip -->
-      <div id="skip-wrap" style="text-align:center;margin-top:4px;">
+      <!-- Skip / Back -->
+      <div id="skip-wrap" style="display:flex;gap:10px;justify-content:center;margin-top:4px;">
+        <button id="back-btn" onclick="prevQ()" style="padding:7px 16px;background:transparent;border:1.5px solid #5A3000;color:#A07840;border-radius:20px;font-size:.85em;cursor:pointer;font-family:'Georgia',serif;">⬅ Retour</button>
         <button id="skip-btn" onclick="nextQ()">Passer ↪</button>
       </div>
     </div>
@@ -1369,7 +1370,7 @@ function loadQ(idx) {
 
   document.getElementById('feedback').textContent = '';
   document.getElementById('next-wrap').style.display = 'none';
-  document.getElementById('skip-wrap').style.display = 'block';
+  document.getElementById('skip-wrap').style.display = 'flex';
 
   // Hide all panels
   ['opts','tt-area','memory-area','repeat-area','selfie-area','photo-area','count-area','launch-area','simon-area','math-area'].forEach(id => {
@@ -1430,7 +1431,7 @@ function pick(chosen, q, btn) {
     document.getElementById('feedback').textContent = '✓ ' + q.ok;
     burstAt(btn);
     rhinoReact(true);
-    playVictory();
+    playCorrectChime();
   } else {
     btn.classList.add('wrong');
     allBtns[q.correct].classList.add('correct');
@@ -1624,6 +1625,13 @@ function selfieOk() {
 }
 
 // ─── NEXT ───
+function prevQ() {
+  if (qIdx <= 0) return;
+  qIdx--;
+  document.getElementById('next-wrap').style.display = 'none';
+  driveTo(qIdx, () => loadQ(qIdx));
+}
+
 function nextQ() {
   const nextIdx = qIdx + 1;
   if (nextIdx >= QUESTIONS.length) {
@@ -2005,6 +2013,9 @@ function buildLaunch(q) {
   penguin.style.transform = '';
   penguin.textContent = '🐧';
 
+  const buddy = document.getElementById('rhino-buddy');
+  if (buddy) buddy.style.display = 'none';
+
   launchActive = true;
   const t0 = Date.now();
   const period = 1600;
@@ -2093,6 +2104,8 @@ function showLaunchResult(distance) {
   document.getElementById('launch-dist-txt').textContent = distance + 'm';
   document.getElementById('launch-rec-txt').textContent = 'Record : ' + rec + 'm' + (isRecord ? ' 🆕' : '');
 
+  const buddy = document.getElementById('rhino-buddy');
+  if (buddy) buddy.style.display = 'block';
   if (distance > 0) { rhinoReact(true); if (distance >= 700) playVictory(); }
 
   const res = document.getElementById('launch-result');
@@ -2113,7 +2126,7 @@ function showLaunchResult(distance) {
 
 function launchPlayAgain() {
   document.getElementById('next-wrap').style.display = 'none';
-  document.getElementById('skip-wrap').style.display = 'block';
+  document.getElementById('skip-wrap').style.display = 'flex';
   buildLaunch(QUESTIONS[qIdx]);
 }
 
@@ -2324,6 +2337,23 @@ function endMath() {
 }
 
 // ─── VICTOIRE ───
+function playCorrectChime() {
+  if (!audioCtx) return;
+  try {
+    [523, 659].forEach((freq, i) => {
+      setTimeout(() => {
+        const osc = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
+        osc.type = 'sine'; osc.frequency.value = freq;
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.18, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.start(t); osc.stop(t + 0.25);
+      }, i * 90);
+    });
+  } catch(e) {}
+}
+
 function playVictory() {
   if (!audioCtx) return;
   try {
