@@ -477,17 +477,26 @@
 
     /* ─── SHOOT ─── */
     #shoot-area { display:none; flex-direction:column; gap:10px; align-items:center; width:100%; }
-    #shoot-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; width:100%; max-width:300px; }
-    .shoot-hole {
-      aspect-ratio:1; background:#1A0A00; border:2px solid #3A2000;
-      border-radius:12px; display:flex; align-items:center; justify-content:center;
-      font-size:clamp(22px,6vw,36px); cursor:pointer; user-select:none;
-      transition: background .15s, transform .1s;
+    #shoot-zone {
+      position:relative; width:100%; height:200px;
+      background:#1A0A00; border:2px solid #3A2000; border-radius:14px;
+      overflow:hidden;
     }
-    .shoot-hole:active { transform:scale(.9); }
-    .shoot-hole.hit-good { background:#0A2010; border-color:var(--green); }
-    .shoot-hole.hit-bad  { background:#200A0A; border-color:var(--red); }
-    #shoot-hud { display:flex; justify-content:space-between; width:100%; max-width:300px; }
+    .shoot-target {
+      position:absolute;
+      width:64px; height:64px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:36px; cursor:pointer; user-select:none;
+      background:rgba(255,255,255,.06); border-radius:50%;
+      border:2px solid rgba(255,143,0,.25);
+      transition: transform .1s;
+      animation: popIn .18s ease;
+    }
+    @keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
+    .shoot-target:active { transform:scale(.85); }
+    .shoot-target.hit-good { background:rgba(46,125,50,.4); border-color:var(--green); animation:none; }
+    .shoot-target.hit-bad  { background:rgba(198,40,40,.35); border-color:var(--red); animation:none; }
+    #shoot-hud { display:flex; justify-content:space-between; width:100%; padding:0 4px; }
 
     /* ─── COUNT ─── */
     #count-area { display:none; flex-direction:column; gap:12px; align-items:center; width:100%; }
@@ -749,7 +758,7 @@
           <span id="shoot-score-txt" style="color:var(--accent);font-weight:bold;font-size:.9em;">Score : 0</span>
           <span id="shoot-time-txt" style="color:var(--deep);font-weight:bold;font-family:monospace;font-size:.9em;">20s</span>
         </div>
-        <div id="shoot-grid"></div>
+        <div id="shoot-zone"></div>
         <div id="shoot-result" style="display:none;flex-direction:column;gap:6px;text-align:center;">
           <div class="sr-emoji" style="font-size:2.4em;"></div>
           <div class="sr-msg"   style="font-size:1em;font-weight:bold;color:var(--accent);"></div>
@@ -1251,7 +1260,8 @@ function cleanupMinigames() {
   clearInterval(shootSpawnInterval); clearInterval(shootCountdown);
   clearInterval(mathCountdown);
   simonPlaying = false;
-  document.querySelectorAll('.shoot-hole').forEach(h => { h.textContent = ''; if(h.dataset) h.dataset.a = ''; });
+  const zone = document.getElementById('shoot-zone');
+  if (zone) zone.innerHTML = '';
 }
 
 function driveTo(stopIdx, callback) {
@@ -1796,56 +1806,52 @@ function showMemResult() {
 
 // ─── SHOOT (Whack-a-rhino) ───
 const SHOOT_DECOYS = ['🦁','🐆','🦓','🐊','🦛','🦍','🦜','🐢','🦒'];
+let shootScore = 0, shootTimeLeft = 20;
 
 function buildShoot(q) {
   document.getElementById('shoot-area').style.display = 'flex';
   document.getElementById('shoot-instr').textContent = q.instr;
   document.getElementById('shoot-result').style.display = 'none';
   shootScore = 0; shootTimeLeft = 20;
-
-  const grid = document.getElementById('shoot-grid');
-  grid.innerHTML = '';
-  for (let i = 0; i < 9; i++) {
-    const hole = document.createElement('div');
-    hole.className = 'shoot-hole';
-    hole.addEventListener('click', () => shootClick(hole));
-    grid.appendChild(hole);
-  }
+  const zone = document.getElementById('shoot-zone');
+  zone.innerHTML = '';
   updateShootHUD();
 
   shootSpawnInterval = setInterval(() => {
-    const holes = [...document.querySelectorAll('.shoot-hole')];
-    holes.forEach(h => { h.textContent = ''; h.dataset.a = ''; h.className = 'shoot-hole'; });
-    const idx = Math.floor(Math.random() * 9);
-    const isRhino = Math.random() < 0.38;
+    // Remove previous target
+    const prev = zone.querySelector('.shoot-target');
+    if (prev) prev.remove();
+
+    const isRhino = Math.random() < 0.40;
     const animal = isRhino ? '🦏' : SHOOT_DECOYS[Math.floor(Math.random() * SHOOT_DECOYS.length)];
-    holes[idx].textContent = animal;
-    holes[idx].dataset.a = animal;
-  }, 820);
+    const target = document.createElement('div');
+    target.className = 'shoot-target';
+    target.textContent = animal;
+    // Random position within zone (64x64 target, zone 200px tall)
+    const zW = zone.offsetWidth || 300;
+    target.style.left = (Math.random() * (zW - 68) + 2) + 'px';
+    target.style.top  = (Math.random() * 128 + 4) + 'px';
+    target.addEventListener('click', () => {
+      const ok = animal === '🦏';
+      shootScore = Math.max(0, shootScore + (ok ? 1 : -1));
+      target.classList.add(ok ? 'hit-good' : 'hit-bad');
+      if (ok && audioCtx) {
+        const osc = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
+        osc.frequency.value = 880; osc.type = 'sine';
+        g.gain.setValueAtTime(.15, t); g.gain.exponentialRampToValueAtTime(.001, t + .15);
+        osc.connect(g); g.connect(audioCtx.destination); osc.start(t); osc.stop(t + .18);
+      }
+      updateShootHUD();
+      setTimeout(() => { if (target.parentNode) target.remove(); }, 250);
+    });
+    zone.appendChild(target);
+  }, 850);
 
   shootCountdown = setInterval(() => {
     shootTimeLeft--;
     updateShootHUD();
     if (shootTimeLeft <= 0) endShoot();
   }, 1000);
-}
-
-let shootScore = 0, shootTimeLeft = 20;
-
-function shootClick(hole) {
-  if (!hole.textContent) return;
-  const ok = hole.dataset.a === '🦏';
-  shootScore = Math.max(0, shootScore + (ok ? 1 : -1));
-  hole.classList.add(ok ? 'hit-good' : 'hit-bad');
-  if (ok && audioCtx) {
-    const osc = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
-    osc.frequency.value = 880; osc.type = 'sine';
-    g.gain.setValueAtTime(.15, t); g.gain.exponentialRampToValueAtTime(.001, t + .15);
-    osc.connect(g); g.connect(audioCtx.destination); osc.start(t); osc.stop(t + .18);
-  }
-  hole.textContent = ''; hole.dataset.a = '';
-  updateShootHUD();
-  setTimeout(() => hole.className = 'shoot-hole', 320);
 }
 
 function updateShootHUD() {
@@ -1855,7 +1861,8 @@ function updateShootHUD() {
 
 function endShoot() {
   clearInterval(shootSpawnInterval); clearInterval(shootCountdown);
-  document.querySelectorAll('.shoot-hole').forEach(h => { h.textContent = ''; h.dataset.a = ''; });
+  const zone = document.getElementById('shoot-zone');
+  if (zone) zone.innerHTML = '';
   rhinoReact(true); playVictory();
   const res = document.getElementById('shoot-result');
   res.style.display = 'flex';
