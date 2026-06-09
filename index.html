@@ -409,6 +409,15 @@
     }
     .selfie-btn:hover { transform: translateY(-2px); }
 
+    /* ─── SKIP ─── */
+    #skip-btn {
+      background: none; border: none;
+      color: #5A4020; font-size: .78em; font-family: 'Georgia', serif;
+      cursor: pointer; padding: 4px 10px; letter-spacing: .5px;
+      transition: color .2s;
+    }
+    #skip-btn:hover { color: #A07040; }
+
     /* ─── MEMORY GAME ─── */
     #memory-area { display: none; flex-direction: column; gap: 10px; align-items: center; width: 100%; }
     #memory-instr { font-size: .82em; color: #A07840; font-style: italic; text-align: center; }
@@ -695,6 +704,11 @@
       <!-- Next -->
       <div id="next-wrap">
         <button class="btn" id="next-btn" onclick="nextQ()">Continuer →</button>
+      </div>
+
+      <!-- Skip -->
+      <div id="skip-wrap" style="text-align:center;margin-top:4px;">
+        <button id="skip-btn" onclick="nextQ()">Passer ↪</button>
       </div>
     </div>
   </div>
@@ -1172,6 +1186,7 @@ function loadQ(idx) {
 
   document.getElementById('feedback').textContent = '';
   document.getElementById('next-wrap').style.display = 'none';
+  document.getElementById('skip-wrap').style.display = 'block';
 
   // Hide all panels
   ['opts','tt-area','memory-area','repeat-area','selfie-area'].forEach(id => {
@@ -1229,6 +1244,7 @@ function pick(chosen, q, btn) {
     document.getElementById('feedback').textContent = '✗ Pas tout à fait... La réponse : ' + q.opts[q.correct];
     rhinoReact(false);
   }
+  document.getElementById('skip-wrap').style.display = 'none';
   document.getElementById('next-wrap').style.display = 'block';
 }
 
@@ -1298,6 +1314,7 @@ function finishTT() {
   document.getElementById('tt-stars').textContent = stars;
   document.getElementById('tt-score').textContent = score + ' — ' + secs.toFixed(1) + 's';
   document.getElementById('tt-msg').textContent = msg;
+  document.getElementById('skip-wrap').style.display = 'none';
   document.getElementById('next-wrap').style.display = 'block';
 }
 
@@ -1342,6 +1359,7 @@ function judgeRepeat(pass) {
     res.querySelector('.rr-msg').textContent = 'Raté... mais le juge est indulgent ce soir.';
     res.querySelector('.rr-sub').textContent = 'Tu passes quand même — pour l\'amour 💛';
   }
+  document.getElementById('skip-wrap').style.display = 'none';
   document.getElementById('next-wrap').style.display = 'block';
 }
 
@@ -1408,6 +1426,7 @@ function savePhoto() {
 }
 
 function selfieOk() {
+  document.getElementById('skip-wrap').style.display = 'none';
   document.getElementById('next-wrap').style.display = 'block';
 }
 
@@ -1601,6 +1620,7 @@ function showMemResult() {
   res.querySelector('.mr-emoji').textContent = emoji;
   res.querySelector('.mr-msg').textContent   = msg;
   res.querySelector('.mr-sub').textContent   = sub;
+  document.getElementById('skip-wrap').style.display = 'none';
   document.getElementById('next-wrap').style.display = 'block';
 }
 
