@@ -514,23 +514,6 @@
     .count-opt.correct { background:#0A2010; border-color:var(--green); color:#90EE90; }
     .count-opt.wrong   { background:#200A0A; border-color:var(--red);   color:#FFB3B3; }
 
-    /* ─── PIXEL ART ─── */
-    #pixel-area { display:none; flex-direction:column; gap:10px; align-items:center; width:100%; }
-    #pixel-ref, #pixel-draw {
-      display:grid;
-      grid-template-columns: repeat(8, clamp(16px,4.5vw,26px));
-      gap:2px;
-    }
-    .px-cell {
-      width:clamp(16px,4.5vw,26px); height:clamp(16px,4.5vw,26px);
-      border-radius:2px;
-    }
-    .px-ref-on  { background:#C8A040; }
-    .px-ref-off { background:#1A0A00; border:1px solid #2A1400; }
-    .px-draw-on  { background:#FF8F00; cursor:pointer; }
-    .px-draw-off { background:#1A0A00; border:1px solid #3A2000; cursor:pointer; }
-    .px-draw-off:hover { background:#2A1400; }
-
     /* ─── SIMON ─── */
     #simon-area { display:none; flex-direction:column; gap:12px; align-items:center; width:100%; }
     #simon-pad {
@@ -796,29 +779,6 @@
       </div>
 
       <!-- Pixel Art -->
-      <div id="pixel-area">
-        <div id="pixel-instr" style="font-size:.82em;color:#A07840;font-style:italic;text-align:center;"></div>
-        <div style="display:flex;gap:20px;justify-content:center;align-items:flex-start;">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <div style="font-size:.68em;color:#A07840;letter-spacing:1px;text-transform:uppercase;">Modèle</div>
-            <div id="pixel-ref"></div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <div style="font-size:.68em;color:#A07840;letter-spacing:1px;text-transform:uppercase;">Ton dessin</div>
-            <div id="pixel-draw"></div>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:4px;">
-          <button onclick="pixelSubmit()" style="padding:9px 20px;background:var(--accent);color:#0D0400;border:none;border-radius:20px;font-size:.9em;font-weight:bold;cursor:pointer;font-family:'Georgia',serif;">Valider 🎨</button>
-          <button onclick="pixelClear()"  style="padding:9px 16px;background:transparent;border:1.5px solid #5A3000;color:#A07840;border-radius:20px;font-size:.9em;cursor:pointer;font-family:'Georgia',serif;">Effacer</button>
-        </div>
-        <div id="pixel-result" style="display:none;flex-direction:column;gap:6px;text-align:center;">
-          <div class="pr-emoji" style="font-size:2.4em;"></div>
-          <div class="pr-msg"   style="font-size:1em;font-weight:bold;color:var(--accent);"></div>
-          <div class="pr-sub"   style="font-size:.83em;color:#A07840;font-style:italic;"></div>
-        </div>
-      </div>
-
       <!-- Simon -->
       <div id="simon-area">
         <div id="simon-instr" style="font-size:.82em;color:#A07840;font-style:italic;text-align:center;"></div>
@@ -1150,7 +1110,6 @@ const QUESTIONS = [
   },
   { type:'photo', stop:"📷 Photo Safari", instr:"Appuie vite sur les 🦏 pour les prendre en photo — laisse les autres tranquilles !" },
   { type:'count',    stop:"🔢 Ouvre l'œil",      instr:"Mémorise la grille... puis réponds vite !" },
-  { type:'pixelart', stop:"🎨 Pixel Safari",     instr:"Reproduis le dessin du rhino case par case !" },
   { type:'simon',    stop:"🎵 Simon Safari",     instr:"Mémorise la séquence et reproduis-la dans le même ordre !" },
   { type:'mathquiz', stop:"⏱ Calcul rapide",    instr:"5 questions, 8 secondes chacune — vas-y !" },
   {
@@ -1165,8 +1124,8 @@ const QUESTIONS = [
 ];
 
 // Checkpoint positions in the scene (px from left of scene-inner)
-const STOPS = [160, 420, 680, 940, 1200, 1460, 1680, 1900, 2100, 2300, 2500, 2700, 2900, 3100, 3380];
-const LABELS = ["Shanghai","Seseh","Pintuyan","Malapascua","Ubud","Labuan Bajo","Mémoire","Rhino","Chiffres","Pixel","Simon","Calcul","Défi","Selfie","🎁"];
+const STOPS = [160, 420, 680, 940, 1200, 1460, 1680, 1900, 2100, 2500, 2700, 2900, 3100, 3380];
+const LABELS = ["Shanghai","Seseh","Pintuyan","Malapascua","Ubud","Labuan Bajo","Mémoire","Rhino","Chiffres","Simon","Calcul","Défi","Selfie","🎁"];
 
 // ─── STATE ───
 let qIdx = 0, answered = false, ttStart = null, ttTimer = null, ttDone = false;
@@ -1361,7 +1320,7 @@ function loadQ(idx) {
 
   const qt = document.getElementById('q-text');
   qt.style.opacity = '0';
-  const titles = { tongue:'Épreuve de vitesse 🏁', memory:'Jeu de mémoire 🧠', repeat:'Défi vocal 🎙', selfie:'Selfie safari 📸', photo:'Photo Safari 📷', count:'Ouvre l\'œil 🔢', pixelart:'Pixel Safari 🎨', simon:'Simon Safari 🎵', mathquiz:'Calcul rapide ⏱' };
+  const titles = { tongue:'Épreuve de vitesse 🏁', memory:'Jeu de mémoire 🧠', repeat:'Défi vocal 🎙', selfie:'Selfie safari 📸', photo:'Photo Safari 📷', count:'Ouvre l\'œil 🔢', simon:'Simon Safari 🎵', mathquiz:'Calcul rapide ⏱' };
   qt.textContent = q.type === 'quiz' ? q.q : (titles[q.type] || '');
   setTimeout(() => { qt.style.transition = 'opacity .4s'; qt.style.opacity = '1'; }, 50);
 
@@ -1370,7 +1329,7 @@ function loadQ(idx) {
   document.getElementById('skip-wrap').style.display = 'block';
 
   // Hide all panels
-  ['opts','tt-area','memory-area','repeat-area','selfie-area','photo-area','count-area','pixel-area','simon-area','math-area'].forEach(id => {
+  ['opts','tt-area','memory-area','repeat-area','selfie-area','photo-area','count-area','simon-area','math-area'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -1394,8 +1353,6 @@ function loadQ(idx) {
     buildPhoto(q);
   } else if (q.type === 'count') {
     buildCount(q);
-  } else if (q.type === 'pixelart') {
-    buildPixelArt(q);
   } else if (q.type === 'simon') {
     buildSimon(q);
   } else if (q.type === 'mathquiz') {
@@ -1985,77 +1942,6 @@ function endCount() {
   document.getElementById('next-wrap').style.display = 'block';
 }
 
-// ─── PIXEL ART ───
-const PIXEL_REF = [
-  [0,0,1,1,1,0,0,0],
-  [0,1,1,1,1,1,0,1],
-  [1,1,1,1,1,1,0,0],
-  [1,1,1,1,1,1,1,0],
-  [1,1,1,1,1,1,1,0],
-  [0,1,1,1,1,1,0,0],
-  [0,0,1,0,0,1,0,0],
-  [0,0,1,0,0,1,0,0],
-];
-let pixelUserGrid = [];
-
-function buildPixelArt(q) {
-  document.getElementById('pixel-area').style.display = 'flex';
-  document.getElementById('pixel-instr').textContent = q.instr;
-  document.getElementById('pixel-result').style.display = 'none';
-  pixelUserGrid = Array.from({length:8}, () => Array(8).fill(0));
-
-  // Reference grid
-  const refEl = document.getElementById('pixel-ref');
-  refEl.innerHTML = '';
-  PIXEL_REF.forEach(row => row.forEach(v => {
-    const c = document.createElement('div');
-    c.className = 'px-cell ' + (v ? 'px-ref-on' : 'px-ref-off');
-    refEl.appendChild(c);
-  }));
-
-  // Drawing grid
-  const drawEl = document.getElementById('pixel-draw');
-  drawEl.innerHTML = '';
-  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
-    const cell = document.createElement('div');
-    cell.className = 'px-cell px-draw-off';
-    cell.dataset.r = r; cell.dataset.c = c;
-    cell.addEventListener('click', () => togglePixel(cell, r, c));
-    drawEl.appendChild(cell);
-  }
-}
-
-function togglePixel(cell, r, c) {
-  pixelUserGrid[r][c] ^= 1;
-  cell.className = 'px-cell ' + (pixelUserGrid[r][c] ? 'px-draw-on' : 'px-draw-off');
-}
-
-function pixelClear() {
-  pixelUserGrid = Array.from({length:8}, () => Array(8).fill(0));
-  document.querySelectorAll('#pixel-draw .px-cell').forEach(c => c.className = 'px-cell px-draw-off');
-}
-
-function pixelSubmit() {
-  let correct = 0;
-  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
-    if (pixelUserGrid[r][c] === PIXEL_REF[r][c]) correct++;
-  }
-  const pct = Math.round(correct / 64 * 100);
-  rhinoReact(true); playVictory();
-  const res = document.getElementById('pixel-result');
-  res.style.display = 'flex';
-  const [emoji, msg, sub] = pct >= 90
-    ? ['🎨','Artiste accomplie !', pct + '% de précision — Magnifique 🦏']
-    : pct >= 70
-    ? ['⭐','Beau dessin !', pct + '% — C\'est reconnaissable 💪']
-    : ['🖌️','Peintre en herbe !', pct + '% — Le rhino te dit merci quand même 😄'];
-  res.querySelector('.pr-emoji').textContent = emoji;
-  res.querySelector('.pr-msg').textContent   = msg;
-  res.querySelector('.pr-sub').textContent   = sub;
-  document.getElementById('skip-wrap').style.display = 'none';
-  document.getElementById('next-wrap').style.display = 'block';
-}
-
 // ─── SIMON SAYS ───
 const SIMON_BTNS = [
   { emoji:'🦁', bg:'#E65100', freq:260 },
@@ -2063,7 +1949,7 @@ const SIMON_BTNS = [
   { emoji:'🦒', bg:'#F9A825', freq:380 },
   { emoji:'🦏', bg:'#6D4C41', freq:140 },
 ];
-let simonSeq = [], simonInput = [], simonRound = 0, simonMaxRound = 7;
+let simonSeq = [], simonInput = [], simonRound = 0, simonMaxRound = 20;
 
 function buildSimon(q) {
   document.getElementById('simon-area').style.display = 'flex';
@@ -2160,10 +2046,12 @@ function endSimon(won) {
   const res = document.getElementById('simon-result');
   res.style.display = 'flex';
   const [emoji, msg, sub] = won
-    ? ['🏆','Mémoire de safari !', '7/7 séquences — Extraordinaire 🎵']
-    : simonRound >= 5
-    ? ['⭐','Super performance !', simonRound + '/' + simonMaxRound + ' rounds — Très bien 💪']
-    : ['🎵','Belle tentative !', simonRound + '/' + simonMaxRound + ' rounds — Continue d\'écouter 🦁'];
+    ? ['🏆','Légende du safari !', '20/20 séquences — Mémoire absolue 🎵']
+    : simonRound >= 15
+    ? ['🥇','Incroyable !', simonRound + '/20 rounds — Tu es une pro 🦏']
+    : simonRound >= 10
+    ? ['⭐','Très belle performance !', simonRound + '/20 rounds — Bravo 💪']
+    : ['🎵','Belle tentative !', simonRound + '/20 rounds — Réessaie 🦁'];
   res.querySelector('.smr-emoji').textContent = emoji;
   res.querySelector('.smr-msg').textContent   = msg;
   res.querySelector('.smr-sub').textContent   = sub;
